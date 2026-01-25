@@ -11,8 +11,8 @@ using UnityEngine.EventSystems;
 
 public class GetMonsters : MonoBehaviour
 {
-    [SerializeField] GameObject content;
-    [SerializeField] ScrollRect scroll;
+    [SerializeField] GameObject contentMaster;
+    [SerializeField] ScrollRect scrollMaster;
     [SerializeField] TMP_Text monsterInfo;
     public GameObject buttonPrefab;
     private List<Monster> listMonsters = new List<Monster>();
@@ -58,7 +58,7 @@ public class GetMonsters : MonoBehaviour
                  };
                  listMonsters.Add(monster);
             }
-            foreach (Transform child in content.transform)
+            foreach (Transform child in contentMaster.transform)
             {
                 Destroy(child.gameObject);
             }
@@ -66,7 +66,7 @@ public class GetMonsters : MonoBehaviour
             {
                 GameObject textObj = new GameObject("NoSheetsText");
 
-                textObj.transform.SetParent(content.transform, false);
+                textObj.transform.SetParent(contentMaster.transform, false);
                 TextMeshProUGUI text = textObj.AddComponent<TextMeshProUGUI>();
 
                 text.text = "There are no monsters.";
@@ -79,13 +79,13 @@ public class GetMonsters : MonoBehaviour
                 foreach (Monster monster in listMonsters)
                 {
                     GameObject button = (GameObject)Instantiate(buttonPrefab);
-                    button.transform.SetParent(content.transform, false);
+                    button.transform.SetParent(contentMaster.transform, false);
                     button.GetComponentInChildren<TextMeshProUGUI>().text = monster.Name;
                     button.GetComponent<Button>().onClick.AddListener(OnClick);
                 }
             }  
             Canvas.ForceUpdateCanvases();
-            scroll.verticalNormalizedPosition = 1f;
+            scrollMaster.verticalNormalizedPosition = 1f;
         }
     }
 

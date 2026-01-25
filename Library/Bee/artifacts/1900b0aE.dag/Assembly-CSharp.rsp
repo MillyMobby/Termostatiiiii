@@ -459,6 +459,7 @@
 -analyzer:"C:/Program Files/Unity/Hub/Editor/6000.2.8f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.UIToolkit.SourceGenerator.dll"
 "Assets/Scripts/ClearText.cs"
 "Assets/Scripts/Drag.cs"
+"Assets/Scripts/GetCharacters.cs"
 "Assets/Scripts/GetMonsters.cs"
 -langversion:9.0
 /deterministic
