@@ -15,7 +15,7 @@ public class GetCharacters : MonoBehaviour
     [SerializeField] ScrollRect scrollPlayer;
     [SerializeField] TMP_Text statsCharacter;
     [SerializeField] TMP_Text charData;
-    public GameObject buttonPrefab;
+    public Toggle togglePrefab;
     private List<Character> characters = new List<Character>();
     void Start()
     {
@@ -93,20 +93,27 @@ public class GetCharacters : MonoBehaviour
             {
                 Character result = characters.Find(x => x.Name == "Karina");
                 charData.SetText("--NAME--\n"+result.Name + "\n--CURR PF--\n" + result.Curr_Pf + "\n--AC--\n" + result.AC + "\n--INITIATIVE--\n" + result.Initiative + "\n--CLASS--\n" + result.Class + "\n--Level--\n" + result.Level + "\n--RACE--\n" + result.Race + "\n--PASS PERC--\n" + result.Pass_Perc + "\n--HIT DICE--\n" + result.Hit_Dice);
-                GameObject button = (GameObject)Instantiate(buttonPrefab);
-                button.transform.SetParent(contentPlayer.transform, false);
-                button.GetComponentInChildren<TextMeshProUGUI>().text = "Stats";
-                button.GetComponent<Button>().onClick.AddListener(OnClick);
+                Toggle toggle = Instantiate(togglePrefab);
+                toggle.transform.SetParent(contentPlayer.transform, false);
+                toggle.GetComponentInChildren<Text>().text = "Show Stats";
+                toggle.GetComponent<Toggle>().onValueChanged.AddListener(delegate {OnValueChanged(toggle);});
+                LayoutRebuilder.ForceRebuildLayoutImmediate(contentPlayer.GetComponent<RectTransform>());
             }  
             Canvas.ForceUpdateCanvases();
             scrollPlayer.verticalNormalizedPosition = 1f;
         }
     }
 
-    void OnClick()
+    void OnValueChanged(Toggle toggle)
     {
-        var buttonClicked = EventSystem.current.currentSelectedGameObject;
-        Character result = characters.Find(x => x.Name == "Karina");
-        statsCharacter.SetText("--STR--\n"+result.Str + "\n--DEX--\n" + result.Dex + "\n--Con--\n" + result.Con + "\n--INT--\n" + result.Int + "\n--WIS--\n" + result.Wis + "\n--CHA--\n" + result.Cha);
+        if (toggle.isOn)
+        {
+            Character result = characters.Find(x => x.Name == "Karina");
+            statsCharacter.SetText("--STR--\n"+result.Str + "\n--DEX--\n" + result.Dex + "\n--Con--\n" + result.Con + "\n--INT--\n" + result.Int + "\n--WIS--\n" + result.Wis + "\n--CHA--\n" + result.Cha);
+        }
+        else 
+        {
+            statsCharacter.SetText("");
+        }
     }
 }
