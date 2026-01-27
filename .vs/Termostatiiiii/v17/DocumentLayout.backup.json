@@ -3,16 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\elero\\OneDrive\\Documenti\\GitHub\\Termostatiiiii\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\elero\\OneDrive\\Documenti\\GitHub\\Termostatiiiii\\Assets\\Scripts\\ClearText.cs||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\ClearText.cs||{3B902123-F8A7-4915-9F01-361F908088D0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\elero\\OneDrive\\Documenti\\GitHub\\Termostatiiiii\\Assets\\Scripts\\DBGetters\\GetActions.cs||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\DBGetters\\GetActions.cs||{3B902123-F8A7-4915-9F01-361F908088D0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\elero\\OneDrive\\Documenti\\GitHub\\Termostatiiiii\\Assets\\Scripts\\GetMonsters.cs||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\GetMonsters.cs||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\elero\\OneDrive\\Documenti\\GitHub\\Termostatiiiii\\LambdaPostgres\\Function.cs||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:LambdaPostgres\\Function.cs||{3B902123-F8A7-4915-9F01-361F908088D0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\elero\\OneDrive\\Documenti\\GitHub\\Termostatiiiii\\Assets\\Scripts\\DBGetters\\GetCharacters.cs||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\DBGetters\\GetCharacters.cs||{3B902123-F8A7-4915-9F01-361F908088D0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,7 +18,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -30,42 +26,26 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ClearText.cs",
-              "DocumentMoniker": "C:\\Users\\elero\\OneDrive\\Documenti\\GitHub\\Termostatiiiii\\Assets\\Scripts\\ClearText.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\ClearText.cs",
-              "ToolTip": "C:\\Users\\elero\\OneDrive\\Documenti\\GitHub\\Termostatiiiii\\Assets\\Scripts\\ClearText.cs",
-              "RelativeToolTip": "Assets\\Scripts\\ClearText.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-25T11:47:48.994Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "GetMonsters.cs",
-              "DocumentMoniker": "C:\\Users\\elero\\OneDrive\\Documenti\\GitHub\\Termostatiiiii\\Assets\\Scripts\\GetMonsters.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\GetMonsters.cs",
-              "ToolTip": "C:\\Users\\elero\\OneDrive\\Documenti\\GitHub\\Termostatiiiii\\Assets\\Scripts\\GetMonsters.cs",
-              "RelativeToolTip": "Assets\\Scripts\\GetMonsters.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAF8AAACnAAAAAAAAAA==",
+              "Title": "GetCharacters.cs",
+              "DocumentMoniker": "C:\\Users\\elero\\OneDrive\\Documenti\\GitHub\\Termostatiiiii\\Assets\\Scripts\\DBGetters\\GetCharacters.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\DBGetters\\GetCharacters.cs",
+              "ToolTip": "C:\\Users\\elero\\OneDrive\\Documenti\\GitHub\\Termostatiiiii\\Assets\\Scripts\\DBGetters\\GetCharacters.cs",
+              "RelativeToolTip": "Assets\\Scripts\\DBGetters\\GetCharacters.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAoAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T16:47:05.361Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-27T14:13:29.743Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Function.cs",
-              "DocumentMoniker": "C:\\Users\\elero\\OneDrive\\Documenti\\GitHub\\Termostatiiiii\\LambdaPostgres\\Function.cs",
-              "RelativeDocumentMoniker": "LambdaPostgres\\Function.cs",
-              "ToolTip": "C:\\Users\\elero\\OneDrive\\Documenti\\GitHub\\Termostatiiiii\\LambdaPostgres\\Function.cs",
-              "RelativeToolTip": "LambdaPostgres\\Function.cs",
-              "ViewState": "AgIAABUAAAAAAAAAAAAAAC8AAAAWAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "GetActions.cs",
+              "DocumentMoniker": "C:\\Users\\elero\\OneDrive\\Documenti\\GitHub\\Termostatiiiii\\Assets\\Scripts\\DBGetters\\GetActions.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\DBGetters\\GetActions.cs",
+              "ToolTip": "C:\\Users\\elero\\OneDrive\\Documenti\\GitHub\\Termostatiiiii\\Assets\\Scripts\\DBGetters\\GetActions.cs",
+              "RelativeToolTip": "Assets\\Scripts\\DBGetters\\GetActions.cs",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T16:09:01.805Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-27T13:57:50.287Z"
             }
           ]
         }

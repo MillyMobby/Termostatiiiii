@@ -1,0 +1,11 @@
+C:\Users\elero\OneDrive\Documenti\GitHub\Termostatiiiii\LambdaPostgres\publish\LambdaPostgres.dll
+C:\Users\elero\OneDrive\Documenti\GitHub\Termostatiiiii\LambdaPostgres\publish\LambdaPostgres.deps.json
+C:\Users\elero\OneDrive\Documenti\GitHub\Termostatiiiii\LambdaPostgres\publish\LambdaPostgres.runtimeconfig.json
+C:\Users\elero\OneDrive\Documenti\GitHub\Termostatiiiii\LambdaPostgres\publish\LambdaPostgres.pdb
+C:\Users\elero\OneDrive\Documenti\GitHub\Termostatiiiii\LambdaPostgres\publish\Amazon.Lambda.APIGatewayEvents.dll
+C:\Users\elero\OneDrive\Documenti\GitHub\Termostatiiiii\LambdaPostgres\publish\Amazon.Lambda.Core.dll
+C:\Users\elero\OneDrive\Documenti\GitHub\Termostatiiiii\LambdaPostgres\publish\Amazon.Lambda.Serialization.SystemTextJson.dll
+C:\Users\elero\OneDrive\Documenti\GitHub\Termostatiiiii\LambdaPostgres\publish\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\elero\OneDrive\Documenti\GitHub\Termostatiiiii\LambdaPostgres\publish\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\elero\OneDrive\Documenti\GitHub\Termostatiiiii\LambdaPostgres\publish\Npgsql.dll
+C:\Users\elero\OneDrive\Documenti\GitHub\Termostatiiiii\LambdaPostgres\publish\System.Diagnostics.DiagnosticSource.dll

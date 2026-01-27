@@ -457,10 +457,17 @@
 -analyzer:"C:/Program Files/Unity/Hub/Editor/6000.2.8f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.Properties.SourceGenerator.dll"
 -analyzer:"C:/Program Files/Unity/Hub/Editor/6000.2.8f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 -analyzer:"C:/Program Files/Unity/Hub/Editor/6000.2.8f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.UIToolkit.SourceGenerator.dll"
-"Assets/Scripts/ClearText.cs"
-"Assets/Scripts/Drag.cs"
-"Assets/Scripts/GetCharacters.cs"
-"Assets/Scripts/GetMonsters.cs"
+"Assets/Scripts/Classes/Action.cs"
+"Assets/Scripts/Classes/Character.cs"
+"Assets/Scripts/Classes/Monster.cs"
+"Assets/Scripts/DBManager.cs"
+"Assets/Scripts/SceneScripts/MapScripts.cs"
+"Assets/Scripts/SceneScripts/MasterScripts.cs"
+"Assets/Scripts/SceneScripts/PlayerScripts.cs"
+"Assets/Scripts/Utility/ClearText.cs"
+"Assets/Scripts/Utility/Drag.cs"
+"Assets/Scripts/Utility/SceneControl.cs"
+"Assets/Scripts/Utility/Search.cs"
 -langversion:9.0
 /deterministic
 /optimize+
