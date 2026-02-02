@@ -1,19 +1,45 @@
+using System.Data;
+using UnityEditor.VersionControl;
 using UnityEngine;
 
 public class DraggableAsset : MonoBehaviour
 {
-    private GameEntity gameEntity;
+    private Character character;
+    //private GameEntity gameEntity;
     private Vector3 offset;
     private bool isDragging = false;
     public bool dropped = false;
     private SpriteRenderer spriteRenderer;
+    private static int rows, cols;
 
 
 // public int x, y;
     public int gridX = -1, gridY = -1;
 
+    public static int Rows
+    {
+        get
+        {
+            return rows;
+        }
+        set
+        {
+            rows = value;
+        }
+    }
+    public static int Cols
+    {
+        get
+        {
+            return cols;
+        }
+        set
+        {
+            cols = value;
+        }
+    }
     // Add this static method to your DraggableAsset class
-    public static DraggableAsset Create(GameObject prefab, GameEntity entity, int color, int pf, Vector3 position)
+    public static DraggableAsset Create(GameObject prefab, Character c, int color, int pf, Vector3 position)
     {
         // Instantiate the prefab
         GameObject obj = Instantiate(prefab, position, Quaternion.identity);
@@ -22,18 +48,13 @@ public class DraggableAsset : MonoBehaviour
         DraggableAsset draggable = obj.GetComponent<DraggableAsset>();
 
         // Initialize it
-        draggable.gameEntity = entity;
-        entity.color = color;
-        entity.current_pf = pf;
+        draggable.character = c;
+        draggable.character.color = color;
+        draggable.character.Name = "Paolo";
+        draggable.character.Curr_Pf = pf;
+        
 
         return draggable;
-    }
-
-    public void initialize(GameEntity entity, int color, int pf)
-    {
-        this.gameEntity = entity;
-        entity.color = color;
-        entity.current_pf = pf; //per provare
     }
 
     void Start()
@@ -41,7 +62,7 @@ public class DraggableAsset : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
 
         // If we already have a gameEntity, update color
-        if (gameEntity != null)
+        if (character != null)
         {
             UpdateColor();
         }
@@ -49,13 +70,13 @@ public class DraggableAsset : MonoBehaviour
 
     void Update()
     {
-        if (gridX == -1 && gridY == -1 && dropped == true) { dropped = false; }
+        //if (gridX == -1 && gridY == -1 && dropped) { dropped = false; }
     }
 
     // Quando clicchi sull'oggetto
     void OnMouseDown()
     {
-        if (gameEntity != null && gameEntity.assigned)
+        if (character != null && character.assigned)
             return; // Se già assegnato, non trascinare
 
         isDragging = true;
@@ -85,13 +106,14 @@ public class DraggableAsset : MonoBehaviour
 
         isDragging = false;
 
-        // Qui puoi aggiungere uno snap a griglia se vuoi
+
         SnapToGrid();
         
     }
 
     private void SnapToGrid()
     {
+
         // for now funziona perchè la griglia viene generata dall'origine, altrimenti si vedrà
         Vector3 cellCoordinates = new Vector3(
             Mathf.Round(transform.position.x),
@@ -101,21 +123,26 @@ public class DraggableAsset : MonoBehaviour
 
         //transform.position = cellCoordinates;
 
-        gridX = Mathf.RoundToInt(cellCoordinates.x);
-        gridY = Mathf.RoundToInt(cellCoordinates.y);
-        Debug.Log($"dragged su cella {gridX} {gridY}");
-        transform.position = new Vector3(0, 7, -5);
-        if (gridX != -1 && gridY != -1) { dropped = true; }
+        int x = Mathf.RoundToInt(transform.position.x);
+        int y = Mathf.RoundToInt(transform.position.y);
+        if (x >= 0 && x < cols && y >= 0 && y < rows) { 
+            gridX = x;
+            gridY = y;
+            Debug.Log($"dragged su cella {gridX} {gridY}");
+            transform.position = new Vector3(0, 7, -5);
+            if (gridX != -1 && gridY != -1) { dropped = true; }
+        }
+            
 
     }
 
     // Property per GameEntity
-    public GameEntity Entity
+    public Character Character
     {
-        get { return gameEntity; }
+        get { return character; }
         set
         {
-            gameEntity = value;
+            character = value;
             UpdateColor(); // Update color when Entity is set
         }
     }
@@ -127,7 +154,7 @@ public class DraggableAsset : MonoBehaviour
 
         if (spriteRenderer == null) return;
 
-        switch (gameEntity.color)
+        switch (character.color)
         {
             
             case 1: // Blue

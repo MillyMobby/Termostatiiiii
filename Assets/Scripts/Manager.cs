@@ -7,6 +7,8 @@ using static UnityEngine.Rendering.DebugUI.Table;
 public class Manager : MonoBehaviour
 
 {
+    public static Manager Instance { get; private set; }
+
     //Questa roba poi arriverà dalla connessione col server
     [SerializeField] protected int _rows = 5, _cols = 6;
     [SerializeField] private int[] inputMatrix = { 1, 0, 0, 0, 2, 0, 0, 0, 3, 1, 0, 0, 0, 2, 0, 0, 0, 3, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0 ,0 ,0 };
@@ -18,6 +20,19 @@ public class Manager : MonoBehaviour
 
     private List<DraggableAsset> _masterAssets;
     [SerializeField] private GameObject draggablePrefab;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
     void drawGrid()
     {
         // row-major 
@@ -28,8 +43,8 @@ public class Manager : MonoBehaviour
                 int index = row * _cols + col;
 
                 var spawnedTile = Instantiate(TilePrefab, new Vector3(col, row), Quaternion.identity);
-                spawnedTile.name = $"Tile {row} {col}";
-                spawnedTile.Init(row, col, inputMatrix[index]);
+                spawnedTile.name = $"Tile {col} {row}";
+                spawnedTile.Init(col, row, inputMatrix[index]);
                 spawnedTile.transform.parent = this.transform;
                 _cells.Add(spawnedTile);
             }
@@ -40,7 +55,7 @@ public class Manager : MonoBehaviour
     void Start()
     {
         //per ora sto creando un draggable a cazzo da qui ma andranno presi dal db o quello che è e istanziati per bene nel menù
-        GameEntity dummyEntity = new GameEntity();
+        Character dummyEntity = new Character();
         DraggableAsset draggable = DraggableAsset.Create(
             draggablePrefab,
             dummyEntity,
@@ -50,6 +65,8 @@ public class Manager : MonoBehaviour
         );
         _masterAssets = new List<DraggableAsset> { draggable };
 
+        DraggableAsset.Rows = _rows;
+        DraggableAsset.Cols = _cols;
         drawGrid();
     }
 
@@ -63,11 +80,20 @@ public class Manager : MonoBehaviour
             {
                 if (asset.gridX >= 0 && asset.gridX < _cols && asset.gridY >= 0 && asset.gridY < _rows && asset.dropped)
                 {
-                    SpriteRenderer assetSprite = asset.GetComponent<SpriteRenderer>();
-                    _cells[asset.gridY * _cols + asset.gridX].addAsset(assetSprite);
-                    asset.gridX = -1;
-                    asset.gridY = -1;
-                    asset.dropped = false;
+                    if (_cells[asset.gridY * _cols + asset.gridX].canAcceptDrop)
+                    {
+
+                        SpriteRenderer assetSprite = asset.GetComponent<SpriteRenderer>();
+                        _cells[asset.gridY * _cols + asset.gridX].addAsset(assetSprite);
+                        //asset.gridX = -1;
+                        //asset.gridY = -1;
+                        asset.dropped = false;
+                    }
+                    else {
+                        asset.gridX = -1;
+                        asset.gridY = -1;
+                    }
+
                 }
 
             }
@@ -116,8 +142,23 @@ public class Manager : MonoBehaviour
         if (cell.isButton)
         {
             Debug.Log($"Button cell touched! Coordinates: ({x}, {y})");
-            // qui andranno mostrate le info della entity cliccata
+            //if (cell.canAcceptDrop == false)
+            //{
+                for (int i = 0; i < _masterAssets.Count; i++)
+                {
+                    if (_masterAssets[i].gridX == cell.x && _masterAssets[i].gridY == cell.y)
+                    {
+                        Debug.Log($"PF = {_masterAssets[i].Character.Curr_Pf}, COLOR = {_masterAssets[i].Character.color}");
+                        return;
+
+                    }
+
+
+                }
+                // qui andranno mostrate le info della entity cliccata
+            
         }
+
     }
 
     
