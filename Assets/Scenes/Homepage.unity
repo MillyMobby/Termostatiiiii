@@ -719,9 +719,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1060419031}
         m_TargetAssemblyTypeName: ButtonManager, Assembly-CSharp
-        m_MethodName: 
+        m_MethodName: LoadScene
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -743,8 +743,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9074a5a3af163415badaa87c5235de01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ButtonManager
-  targetScene:
-    m_Handle: 0
+  targetScene: {fileID: 102900000, guid: fdbdc4c6354114c0ebd0d5e32a4bac27, type: 3}
 --- !u!1 &1104333304
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class ButtonManager : MonoBehaviour
+public class SceneButtonManager : MonoBehaviour
 {
 
     [SerializeField] private SceneAsset targetScene;
