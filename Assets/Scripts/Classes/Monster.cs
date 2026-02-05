@@ -1,6 +1,9 @@
+using System.Drawing;
+
 [System.Serializable]
 public class Monster
 {
+   public static int color = 2;
    public string Name { get; set; }
    public int Max_Pf { get; set; }
    public int AC { get; set; }

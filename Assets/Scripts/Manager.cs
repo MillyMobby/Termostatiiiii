@@ -11,15 +11,38 @@ public class Manager : MonoBehaviour
 
     //Questa roba poi arriverà dalla connessione col server
     [SerializeField] protected int _rows = 5, _cols = 6;
-    [SerializeField] private int[] inputMatrix = { 1, 0, 0, 0, 2, 0, 0, 0, 3, 1, 0, 0, 0, 2, 0, 0, 0, 3, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0 ,0 ,0 };
+    [SerializeField] private int[] inputMatrix = { 1, 0, 0, 0, 2, 0, 0, 0, 3, 1, 0, 0, 0, 2, 0, 0, 0, 3, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0 };
 
     [SerializeField] private Cell TilePrefab;
     [SerializeField] private Transform _cam;
 
     private List<Cell> _cells = new List<Cell> { };
 
+    public List<Cell> Cells
+    {
+        get
+        {
+            return this._cells;
+        }
+        set
+        {
+            this._cells = value;
+        }
+
+    }
+
+    [SerializeField] private GameObject masterMenu;
     private List<DraggableAsset> _masterAssets;
     [SerializeField] private GameObject draggablePrefab;
+
+    public void AddDraggableAsset(DraggableAsset asset)
+    {
+        if (_masterAssets == null)
+            _masterAssets = new List<DraggableAsset>();
+
+        _masterAssets.Add(asset);
+        Debug.Log($"Added draggable asset to manager list. Total: {_masterAssets.Count}");
+    }
 
     private void Awake()
     {
@@ -54,50 +77,18 @@ public class Manager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        //per ora sto creando un draggable a cazzo da qui ma andranno presi dal db o quello che è e istanziati per bene nel menù
-        Character dummyEntity = new Character();
-        DraggableAsset draggable = DraggableAsset.Create(
-            draggablePrefab,
-            dummyEntity,
-            3,  // green
-            20, // pf
-            new Vector3(0, 7, -5) 
-        );
-        _masterAssets = new List<DraggableAsset> { draggable };
-
+        _masterAssets = new List<DraggableAsset>();
         DraggableAsset.Rows = _rows;
         DraggableAsset.Cols = _cols;
         drawGrid();
     }
 
-    // Update is called once per frame
     void Update()
     {
         HandleTouchInputRaycast();
-        if (_masterAssets != null)
-        {
-            foreach (var asset in _masterAssets)
-            {
-                if (asset.gridX >= 0 && asset.gridX < _cols && asset.gridY >= 0 && asset.gridY < _rows && asset.dropped)
-                {
-                    if (_cells[asset.gridY * _cols + asset.gridX].canAcceptDrop)
-                    {
 
-                        SpriteRenderer assetSprite = asset.GetComponent<SpriteRenderer>();
-                        _cells[asset.gridY * _cols + asset.gridX].addAsset(assetSprite);
-                        //asset.gridX = -1;
-                        //asset.gridY = -1;
-                        asset.dropped = false;
-                    }
-                    else {
-                        asset.gridX = -1;
-                        asset.gridY = -1;
-                    }
+        // serve cleanup dei draggable che non sono stati piazzati e sono rimasti in giro per troppo tempo
 
-                }
-
-            }
-        }
     }
 
     void HandleTouchInputRaycast()
@@ -144,23 +135,45 @@ public class Manager : MonoBehaviour
             Debug.Log($"Button cell touched! Coordinates: ({x}, {y})");
             //if (cell.canAcceptDrop == false)
             //{
-                for (int i = 0; i < _masterAssets.Count; i++)
+            for (int i = 0; i < _masterAssets.Count; i++)
+            {
+                if (_masterAssets[i].gridX == cell.x && _masterAssets[i].gridY == cell.y)
                 {
-                    if (_masterAssets[i].gridX == cell.x && _masterAssets[i].gridY == cell.y)
-                    {
-                        Debug.Log($"PF = {_masterAssets[i].Character.Curr_Pf}, COLOR = {_masterAssets[i].Character.color}");
-                        return;
-
-                    }
-
+                    Debug.Log($"PF = {_masterAssets[i].Monster.Max_Pf}, AC = {_masterAssets[i].Monster.AC}");
+                    return;
 
                 }
-                // qui andranno mostrate le info della entity cliccata
-            
+
+
+            }
+            // qui andranno mostrate le info della entity cliccata
+
         }
 
     }
 
-    
+
+
+
+
+
+    public void CleanupUnusedDraggables()
+    {
+        if (_masterAssets != null)
+        {
+            for (int i = _masterAssets.Count - 1; i >= 0; i--)
+            {
+                var asset = _masterAssets[i];
+
+                // Check if asset is placed or should be cleaned up
+                if (asset.gridX == -1 && asset.gridY == -1 && !asset.dropped)
+                {
+                    // Asset hasn't been placed for a while, clean it up
+                    Destroy(asset.gameObject);
+                    _masterAssets.RemoveAt(i);
+                }
+            }
+        }
+    }
 
 }

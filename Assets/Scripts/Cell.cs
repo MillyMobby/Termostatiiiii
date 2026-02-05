@@ -105,6 +105,7 @@ public class Cell : MonoBehaviour
     {
         if (contentRenderer != null && asset != null && _canAcceptDrop)
         {
+            Debug.Log("changing sprite");
             contentRenderer.sprite = asset.sprite;
             contentRenderer.color = asset.color;
             isButton = true;
