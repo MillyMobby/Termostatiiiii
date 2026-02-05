@@ -157,22 +157,11 @@ public class Manager : MonoBehaviour
 
 
 
-    public void CleanupUnusedDraggables()
+    public void CleanupDraggable(DraggableAsset asset)
     {
-        if (_masterAssets != null)
+        if (_masterAssets != null && _masterAssets.Contains(asset))
         {
-            for (int i = _masterAssets.Count - 1; i >= 0; i--)
-            {
-                var asset = _masterAssets[i];
-
-                // Check if asset is placed or should be cleaned up
-                if (asset.gridX == -1 && asset.gridY == -1 && !asset.dropped)
-                {
-                    // Asset hasn't been placed for a while, clean it up
-                    Destroy(asset.gameObject);
-                    _masterAssets.RemoveAt(i);
-                }
-            }
+            _masterAssets.Remove(asset);
         }
     }
 
