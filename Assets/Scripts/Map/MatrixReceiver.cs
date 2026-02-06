@@ -12,8 +12,7 @@ public class MatrixReceiver : MonoBehaviour
     private Thread receiveThread;
     private bool isRunning = true;
 
-    // Shared data
-    private int[,] latestMatrix;
+    [Header("Shared data")]
     private int[] latestArray;
     private int latestRows;
     private int latestCols;

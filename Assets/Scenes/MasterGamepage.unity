@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 232167308}
   - component: {fileID: 232167309}
   m_Layer: 0
-  m_Name: MatrixManager
+  m_Name: Map Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -328,7 +328,7 @@ GameObject:
   - component: {fileID: 524861867}
   - component: {fileID: 524861870}
   m_Layer: 5
-  m_Name: Build Button
+  m_Name: Master Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -551,7 +551,7 @@ GameObject:
   - component: {fileID: 938095197}
   - component: {fileID: 938095196}
   m_Layer: 0
-  m_Name: MatrixReceiver
+  m_Name: Matrix Receiver
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

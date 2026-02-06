@@ -4,9 +4,10 @@ using UnityEngine;
 public class MapManager : MonoBehaviour
 {
 
+    // * Singleton
     public static MapManager Instance { get; private set; }
 
-    [Header("Settings")]
+    [Header("Map Settings")]
     [SerializeField] private MatrixReceiver _matrixReceiver;
     [SerializeField] private Cell _tilePrefab;
     [SerializeField] private RectTransform _gridCanvas;
@@ -19,6 +20,8 @@ public class MapManager : MonoBehaviour
     [SerializeField] private GameObject draggablePrefab;
     private List<DraggableAsset> _masterAssets;
 
+
+    [Header("Data")]
     private int _rows, _cols;
     private int[] inputMatrix;
     private List<Cell> cells = new List<Cell> { };
@@ -35,8 +38,8 @@ public class MapManager : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
+
 
     void Start()
     {
@@ -48,6 +51,12 @@ public class MapManager : MonoBehaviour
         _masterAssets = new List<DraggableAsset>();
         DraggableAsset.Rows = _rows;
         DraggableAsset.Cols = _cols;
+    }
+
+
+    void Update()
+    {
+        HandleTouchInputRaycast();
     }
 
 
@@ -72,15 +81,7 @@ public class MapManager : MonoBehaviour
             ClearGrid();
             DrawGrid();
         } 
-        else
-        {
-            UpdateGrid(newMatrix);
-        }
-        
-        //PrintMat();
-        //inputMatrix = newMatrix;
-        //UpdateCellValues();
-
+        UpdateGrid(newMatrix);
     }
 
 
@@ -129,7 +130,6 @@ public class MapManager : MonoBehaviour
                 spawnedTile.transform.localScale = targetScale;
                 
                 spawnedTile.name = $"Tile ({row}x{col})";
-                Debug.Log($"CELL: objectType: {inputMatrix[index]}");
                 spawnedTile.Init(row, col, inputMatrix[index]);
                 cells.Add(spawnedTile);
             }
@@ -182,27 +182,6 @@ public class MapManager : MonoBehaviour
     }
 
 
-    void UpdateCellValues()
-    {
-        for (int i = 0; i < inputMatrix.Length; i++)
-        {
-            if (i < cells.Count) 
-                cells[i].UpdateValue(inputMatrix[i]);
-        }
-    }
-
-
-    private void PrintMat()
-    {
-        string printable = "[ ";
-        foreach (var x in inputMatrix)
-            printable += $"{x} ";
-        printable += " ]";
-
-        //Debug.Log(printable);
-    }
-
-
     public void AddDraggableAsset(DraggableAsset asset)
     {
         if(_masterAssets == null)
@@ -221,7 +200,7 @@ public class MapManager : MonoBehaviour
 
             if (hit.collider != null)
             {
-                Cell touchedCell = hit.collider.GetComponent<Cell>();
+                Cell touchedCell = hit.collider.GetComponentInParent<Cell>();
                 if (touchedCell != null)
                 {
                     Debug.Log($"Clicked cell at ({touchedCell.X}, {touchedCell.Y})");
@@ -239,7 +218,7 @@ public class MapManager : MonoBehaviour
 
             if (hit.collider != null)
             {
-                Cell touchedCell = hit.collider.GetComponent<Cell>();
+                Cell touchedCell = hit.collider.GetComponentInParent<Cell>();
                 if (touchedCell != null)
                 {
                     Debug.Log($"Touched cell at ({touchedCell.X}, {touchedCell.Y})");
@@ -255,8 +234,7 @@ public class MapManager : MonoBehaviour
         if (cell.IsButton)
         {
             Debug.Log($"Button cell touched! Coordinates: ({x}, {y})");
-            //if (cell.canAcceptDrop == false)
-            //{
+
             for (int i = 0; i < _masterAssets.Count; i++)
             {
                 if (_masterAssets[i].gridX == cell.X && _masterAssets[i].gridY == cell.Y)
@@ -268,8 +246,7 @@ public class MapManager : MonoBehaviour
 
 
             }
-            // qui andranno mostrate le info della entity cliccata
-
+            // ! qui andranno mostrate le info della entity cliccata
         }
 
     }

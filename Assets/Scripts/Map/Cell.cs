@@ -3,19 +3,15 @@ using UnityEngine.UI;
 
 public class Cell : MonoBehaviour
 {
-    [Header("Settings")]
     [SerializeField] private GameObject manager;
-    [SerializeField] private int objectType;
-    [SerializeField] private bool isButton = false;
-    public bool IsButton => isButton;
-
+  
     [Header("Position of the cell")]
     [SerializeField] private int x;
     public int X => x;
     [SerializeField] private int y;
     public int Y => y;
 
-    [Header("Sprite for entities")]
+    [Header("Sprite for the entities")]
     [SerializeField] private Sprite redPlayer;
     [SerializeField] private Sprite greenPlayer;
     [SerializeField] private Sprite bluePlayer;
@@ -27,6 +23,10 @@ public class Cell : MonoBehaviour
 
     private bool canAcceptDrop = false;
     public bool CanAcceptDrop => canAcceptDrop;
+    private int objectType;
+    public int ObjectType => objectType;
+    private bool isButton = false;
+    public bool IsButton => isButton;
 
 
     public Sprite getColor(int type)
@@ -82,7 +82,6 @@ public class Cell : MonoBehaviour
         {
             isButton = true;
             canAcceptDrop = true;
-            Debug.Log("CELL: CAN ACCEPT DROP NOW.");
             
             if (contentRenderer != null) 
             {
