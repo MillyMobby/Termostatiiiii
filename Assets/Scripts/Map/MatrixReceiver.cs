@@ -51,7 +51,7 @@ public class MatrixReceiver : MonoBehaviour
             }
 
             // Notify the Manager (and anyone else listening)
-            Debug.Log("Dispatching new matrix to Manager...");
+            //Debug.Log("Dispatching new matrix to Manager...");
             OnMatrixReady?.Invoke(dataToSend, r, c);
         }
     }

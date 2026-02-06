@@ -7,10 +7,13 @@ public class Cell : MonoBehaviour
     [SerializeField] private GameObject manager;
     [SerializeField] private int objectType;
     [SerializeField] private bool isButton = false;
+    public bool IsButton => isButton;
 
     [Header("Position of the cell")]
     [SerializeField] private int x;
+    public int X => x;
     [SerializeField] private int y;
+    public int Y => y;
 
     [Header("Sprite for entities")]
     [SerializeField] private Sprite redPlayer;
@@ -22,6 +25,9 @@ public class Cell : MonoBehaviour
     [SerializeField] private Image cellBackground;
     [SerializeField] private Image contentRenderer;
 
+    private bool canAcceptDrop = false;
+    public bool CanAcceptDrop => canAcceptDrop;
+
 
     public Sprite getColor(int type)
     {
@@ -30,7 +36,7 @@ public class Cell : MonoBehaviour
             case 1: return redPlayer;
             case 2: return greenPlayer;
             case 3: return bluePlayer;
-            default: return greenPlayer;
+            default: return null;
         }
     }
 
@@ -53,6 +59,8 @@ public class Cell : MonoBehaviour
             {
                 contentRenderer.enabled = true;
                 contentRenderer.sprite = getColor(newValue);
+                isButton = true;
+                canAcceptDrop = true;
             }
         }
         else
@@ -73,6 +81,9 @@ public class Cell : MonoBehaviour
         if (objectType != 0)
         {
             isButton = true;
+            canAcceptDrop = true;
+            Debug.Log("CELL: CAN ACCEPT DROP NOW.");
+            
             if (contentRenderer != null) 
             {
                 contentRenderer.enabled = true;
@@ -95,6 +106,7 @@ public class Cell : MonoBehaviour
             contentRenderer.sprite = asset.sprite;
             contentRenderer.color = asset.color;
             isButton = true;
+            canAcceptDrop = false;
         }  
     }
 

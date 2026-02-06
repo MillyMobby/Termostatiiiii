@@ -11,18 +11,18 @@ public class ButtonSpawner : MonoBehaviour
 
 
     [Header("Testing data")]
-    [SerializeField] private string dndClass = "bard";
-    private string[] dndClasses = { "bard", "thief", "warrior" };
     private string[] btnNames = { "Red", "Green", "Blue" };
     private Color[] colors = { Color.red, Color.green, Color.blue };
-    [SerializeField] private Color btnColor = Color.red;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        for (int i = 0; i < dndClasses.Length; i++) 
-            CreateButton(btnNames[i], dndClasses[i], colors[i]);
+        foreach (Character c in Persist.GetCharacters())
+        {
+            Debug.Log($"CreateButton(text: {c.Name}, selectedClass: {c.Class}, col: {Color.red})");
+            CreateButton(text: c.Name, selectedClass: c.Class, col: Color.red);
+        }
     }
 
     public void CreateButton(string text, string selectedClass, Color col)

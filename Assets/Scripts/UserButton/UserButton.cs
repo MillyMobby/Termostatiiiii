@@ -14,7 +14,6 @@ public class UserButton : MonoBehaviour
     public void Configure(string text, string dndClass, Color buttonColor, Action onClickAction)
     {
         dndClass = dndClass.ToLower();
-        Debug.Log(dndClass);
         if (buttonText != null) buttonText.text = text;
 
         if (classImage != null)
@@ -27,6 +26,7 @@ public class UserButton : MonoBehaviour
                     borderImage.sprite = Resources.Load<Sprite>(path + "ClassBorder/Bard");
                     break;
                 
+                case "monk":
                 case "thief":
                     classImage.sprite = Resources.Load<Sprite>(path + "ClassImage/Thief");
                     borderImage.sprite = Resources.Load<Sprite>(path + "ClassBorder/Rogue");
@@ -42,6 +42,7 @@ public class UserButton : MonoBehaviour
                     borderImage.sprite = Resources.Load<Sprite>(path + "ClassBorder/Ranger");
                     break;
 
+                case "wizard":
                 case "mage":
                     classImage.sprite = Resources.Load<Sprite>(path + "ClassImage/Mage");
                     borderImage.sprite = Resources.Load<Sprite>(path + "ClassBorder/Sorcerer");
