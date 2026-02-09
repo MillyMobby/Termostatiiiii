@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public class Character
+public class Character : WorldEntity
 {
         public int AC { get; set; }
         public int Initiative { get; set; }
@@ -17,11 +17,6 @@ public class Character
         public string Class { get; set; }
         public int Level { get; set; }
         public string Race { get; set; }
-        public string Name { get; set; }
-
         public int Max_Pf { get; set; }
-
-        public string Bio { get; set; }
-
         public bool Assigned {get; set; }
 }

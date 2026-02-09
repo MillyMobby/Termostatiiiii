@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 591076095099454506}
   - component: {fileID: 8834702069014887667}
   - component: {fileID: 3443661712344373330}
-  - component: {fileID: 2417153536825321843}
+  - component: {fileID: 2293742043338668829}
   m_Layer: 0
   m_Name: Draggable
   m_TagString: Untagged
@@ -138,7 +138,7 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &2417153536825321843
+--- !u!114 &2293742043338668829
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -147,9 +147,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 8999777510355309203}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e960c78a5e7aaaf4384d9f1e276eda29, type: 3}
+  m_Script: {fileID: 11500000, guid: 722e8c2eeec6946ae9913598fca7be1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DraggableAsset
-  dropped: 0
-  gridX: -1
-  gridY: -1

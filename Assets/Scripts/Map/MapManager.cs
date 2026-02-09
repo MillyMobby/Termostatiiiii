@@ -237,9 +237,9 @@ public class MapManager : MonoBehaviour
 
             for (int i = 0; i < _masterAssets.Count; i++)
             {
-                if (_masterAssets[i].gridX == cell.X && _masterAssets[i].gridY == cell.Y)
+                if (_masterAssets[i].GridX == cell.X && _masterAssets[i].GridY == cell.Y)
                 {
-                    Debug.Log($"PF = {_masterAssets[i].Monster.Max_Pf}, AC = {_masterAssets[i].Monster.AC}");
+                    Debug.Log($"PF = {_masterAssets[i].AssignedEntity.HP}, AC = {_masterAssets[i].AssignedEntity.Bio}");
                     return;
 
                 }

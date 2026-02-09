@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -11,18 +13,24 @@ public class ButtonSpawner : MonoBehaviour
 
 
     [Header("Testing data")]
-    private string[] btnNames = { "Red", "Green", "Blue" };
     private Color[] colors = { Color.red, Color.green, Color.blue };
 
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        foreach (Character c in Persist.GetCharacters())
+        if (Persist.IsLoaded) InitializeCharacterButtons();
+        else Persist.OnDataLoaded += InitializeCharacterButtons;
+    }
+
+
+    void InitializeCharacterButtons()
+    {
+        List<Character> characters = Persist.GetCharacters();
+
+        for (int i = 0; i < Mathf.Min(characters.Count, colors.Length); i++)
         {
-            Debug.Log($"CreateButton(text: {c.Name}, selectedClass: {c.Class}, col: {Color.red})");
-            CreateButton(text: c.Name, selectedClass: c.Class, col: Color.red);
-        }
+            CreateButton(text: characters[i].Name, selectedClass: characters[i].Class, col: colors[i]);
+        } 
     }
 
     public void CreateButton(string text, string selectedClass, Color col)
@@ -40,6 +48,6 @@ public class ButtonSpawner : MonoBehaviour
 
     private void OnButtonClicked()
     {
-        Debug.Log("Button clicked.");
+        return;
     }
 }

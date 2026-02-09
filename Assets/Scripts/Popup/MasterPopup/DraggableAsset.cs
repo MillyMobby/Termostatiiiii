@@ -1,386 +1,208 @@
-using System.Data;
-using UnityEditor.VersionControl;
 using UnityEngine;
-using UnityEngine.SocialPlatforms;
 
 public class DraggableAsset : MonoBehaviour
 {
-    private Character character;
-    private Monster monster;
-    private Obstacle obstacle; //niente ostacoli e characters per ora, eventually da aggiungere a master scripts
-    private Vector3 offset;
-    private bool isDragging = false;
-    public bool dropped = false;
+    #region Fields
+
+    [Header("Assigned Entities")]
+
+    private WorldEntity assignedEntity;
+    public WorldEntity AssignedEntity
+    {
+        get => assignedEntity;
+        set
+        {
+            assignedEntity = value;
+            UpdateColor();
+        }
+    }
+
     private SpriteRenderer spriteRenderer;
-    private static int rows, cols;
+    private Camera mainCamera;
 
-    public int gridX = -1, gridY = -1;
+    private Vector3 dragOffset;
+    private bool isDragging;
 
-    #region PropertiesAndUpdates
-    public static int Rows
-    {
-        get
-        {
-            return rows;
-        }
-        set
-        {
-            rows = value;
-        }
-    }
-    public static int Cols
-    {
-        get
-        {
-            return cols;
-        }
-        set
-        {
-            cols = value;
-        }
-    }
+    public bool Dropped { get; private set; }
 
-    public Character Character
-    {
-        get { return character; }
-        set
-        {
-            character = value;
-            UpdateColor(); // Update color when Entity is set
-        }
-    }
+    public int GridX { get; private set; } = -1;
+    public int GridY { get; private set; } = -1;
 
-    public Monster Monster
-    {
-        get { return monster; }
-        set
-        {
-            monster = value;
-            UpdateColor(); // Update color when Entity is set
-        }
-    }
-
-    // In DraggableAsset.cs, update the UpdateColor() method:
-    private void UpdateColor()
-    {
-        if (spriteRenderer == null)
-            spriteRenderer = GetComponent<SpriteRenderer>();
-
-        if (spriteRenderer == null) return;
-
-        int colorValue = 0;
-        if (monster != null)
-        {
-
-            colorValue = 2;
-        }
-        else if (character != null)
-        {
-            colorValue = 3;
-        }
-
-        switch (colorValue)
-        {
-            case 1: // Blue
-                spriteRenderer.color = Color.blue;
-                break;
-            case 2: // red
-                spriteRenderer.color = Color.red;
-                break;
-            case 3: // green
-                spriteRenderer.color = Color.green;
-                break;
-            default:
-                spriteRenderer.color = Color.white;
-                break;
-        }
-    }
     #endregion
 
-    //public static DraggableAsset Create(GameObject prefab, Character c, int color, int pf, Vector3 position)
-    //{
-    //    // Instantiate the prefab
-    //    GameObject obj = Instantiate(prefab, position, Quaternion.identity);
+    #region Grid Settings
 
-    //    // Get the component
-    //    DraggableAsset draggable = obj.GetComponent<DraggableAsset>();
-    //    draggable.character = c;
+    public static int Rows { get; set; }
+    public static int Cols { get; set; }
 
-    //    return draggable;
-    //}
+    #endregion
 
-    ////not uesed
-    //public static DraggableAsset Create(GameObject prefab, Monster m, int color, int pf, Vector3 position)
-    //{
-    //    // Instantiate the prefab
-    //    GameObject obj = Instantiate(prefab, position, Quaternion.identity);
+    #region Unity Lifecycle
 
-    //    // Get the component
-    //    DraggableAsset draggable = obj.GetComponent<DraggableAsset>();
-    //    draggable.monster = m;
-
-    //    return draggable;
-    //}
-
-    ////versions for Obstacle, not used right now
-    //public static DraggableAsset Create(GameObject prefab, Obstacle o, int color, int pf, Vector3 position)
-    //{
-    //    // Instantiate the prefab
-    //    GameObject obj = Instantiate(prefab, position, Quaternion.identity);
-
-    //    // Get the component
-    //    DraggableAsset draggable = obj.GetComponent<DraggableAsset>();
-    //    draggable.obstacle = o;
-
-    //    return draggable;
-    //}
-
-    void Start()
+    private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        UpdateColor();        
+        mainCamera = Camera.main;
+        UpdateColor();
     }
 
-    void Update()
-    {
-        //if (gridX == -1 && gridY == -1 && dropped) { dropped = false; }
-    }
+    #endregion
 
-    // Quando clicchi sull'oggetto
-    void OnMouseDown()
-    {
+    #region Drag Logic
 
-        if (character != null && character.Assigned)
-            return; // Se già assegnato, non trascinare
+    private void OnMouseDown()
+    {
+        if (AssignedEntity is Character c && c.Assigned)
+            return;
 
         isDragging = true;
 
-        // Calcola l'offset tra mouse e centro dell'oggetto
-        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorldPos.z = -8;
-        offset = transform.position - mouseWorldPos;
-        
+        Vector3 mouseWorldPos = GetMouseWorldPosition();
+        dragOffset = transform.position - mouseWorldPos;
     }
 
-    void OnMouseDrag()
+    private void OnMouseDrag()
     {
-        if (!isDragging) return;
+        if (!isDragging)
+            return;
 
-        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorldPos.z = -8;
-        transform.position = mouseWorldPos + offset;
+        transform.position = GetMouseWorldPosition() + dragOffset;
     }
 
-    void OnMouseUp()
+    private void OnMouseUp()
     {
-        if (!isDragging) return;
+        if (!isDragging)
+            return;
 
         isDragging = false;
         SnapToGrid();
-        
     }
 
+    #endregion
+
+    #region Grid Placement
 
     private void SnapToGrid()
     {
         RectTransform grid = MapManager.Instance.GridCanvas;
         float cellSize = MapManager.Instance.CellSize;
 
-        Vector2 localPoint;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
             grid,
-            Camera.main.WorldToScreenPoint(transform.position),
-            Camera.main,
-            out localPoint
-        );
+            mainCamera.WorldToScreenPoint(transform.position),
+            mainCamera,
+            out Vector2 localPoint))
+        {
+            ResetDraggable();
+            return;
+        }
 
-        float gridWidth = cols * cellSize;
-        float gridHeight = rows * cellSize;
+        float gridWidth = Cols * cellSize;
+        float gridHeight = Rows * cellSize;
 
-        float startX = - (gridWidth - cellSize) / 2f;
-        float startY = - (gridHeight - cellSize) / 2f;
+        float startX = -(gridWidth - cellSize) / 2f;
+        float startY = -(gridHeight - cellSize) / 2f;
 
         int col = Mathf.RoundToInt((localPoint.x - startX) / cellSize);
         int row = Mathf.RoundToInt((localPoint.y - startY) / cellSize);
 
-        if (row < 0 || row >= rows || col < 0 || col >= cols)
+        if (!IsInsideGrid(row, col))
         {
             ResetDraggable();
             return;
         }
 
-        gridX = col;
-        gridY = row;
-
-        float snapX = startX + col * cellSize;
-        float snapY = startY + row * cellSize;
+        GridX = col;
+        GridY = row;
 
         transform.SetParent(grid, true);
-        transform.localPosition = new Vector3(snapX, snapY, 0);
+        transform.localPosition = new Vector3(
+            startX + col * cellSize,
+            startY + row * cellSize,
+            0f
+        );
 
-        dropped = true;
-        ProcessDropOnCell();        
+        Dropped = true;
+        ProcessDropOnCell();
     }
 
-
-    /*private void SnapToGrid()
+    private bool IsInsideGrid(int row, int col)
     {
-        RectTransform rect = MapManager.Instance.GridCanvas;
-
-        // Calculate half-dimensions
-        float halfWidth = rect.rect.width / 2f;
-        float halfHeight = rect.rect.height / 2f;
-
-        // Define boundaries relative to the center (0,0)
-        float startX = -halfWidth;
-        float endX = halfWidth;
-        float startY = -halfHeight;
-        float endY = halfHeight;
-
-        int x = Mathf.RoundToInt(transform.position.x);
-        int y = Mathf.RoundToInt(transform.position.y);
-
-        // Check if the rounded integer falls within the Rect bounds
-        if (x >= startX && x <= endX && y >= startY && y <= endY)
-        {
-            gridX = x;
-            gridY = y;
-
-            // Snap to the exact integer position
-            transform.position = new Vector3(x, y, 200);
-
-            Debug.Log($"Dropped on centered cell: {gridX}, {gridY}");
-
-            dropped = true;
-            ProcessDropOnCell();
-        }
-        else
-        {
-            ResetDraggable();
-        }
-    }*/
-
-    /*
-    private void ProcessDropOnCell()
-    {
-        if (MapManager.Instance == null)
-        {
-            Debug.LogError("Manager instance is null!");
-            return;
-        }
-
-        int cellIndex = gridY * cols + gridX;
-
-        if (cellIndex >= 0 && cellIndex < MapManager.Instance.Cells.Count)
-        {
-            Cell targetCell = MapManager.Instance.Cells[cellIndex];
-
-            if (targetCell != null && targetCell.CanAcceptDrop)
-            {
-                Debug.Log("Cell can accept drop, processing...");
-
-                SpriteRenderer assetSprite = GetComponent<SpriteRenderer>();
-
-                if (assetSprite != null)
-                {  if (monster != null)
-                    {
-                        int objectType = 2; // per ora è static
-                        targetCell.UpdateValue(objectType);
-                        Debug.Log($"Updated cell with objectType: {objectType}");
-                    }
-                    else if (character != null)
-                    {
-                        int objectType = 3;
-                        targetCell.UpdateValue(objectType);
-                    }
-                    targetCell.AddAsset(assetSprite);
-                    OnSuccessfullyPlaced();
-                }
-                else
-                {
-                    Debug.LogError("SpriteRenderer is null on draggable!");
-                    ResetDraggable();
-                }
-            }
-            else
-            {
-                Debug.Log($"Cell cannot accept drop. TargetCell: {targetCell}, canAcceptDrop: {targetCell?.CanAcceptDrop}");
-                ResetDraggable();
-            }
-        }
-        else
-        {
-            Debug.LogError($"Invalid cell index: {cellIndex}. Grid bounds: {cols}x{rows}");
-            ResetDraggable();
-        }
-    }*/
-
+        return row >= 0 && row < Rows && col >= 0 && col < Cols;
+    }
 
     private void ProcessDropOnCell()
     {
-        if (MapManager.Instance == null)
+        int cellIndex = GridY * Cols + GridX;
+
+        if (cellIndex < 0 || cellIndex >= MapManager.Instance.Cells.Count)
         {
-            Debug.LogError("Manager instance is null!");
+            ResetDraggable();
             return;
         }
 
-        int cellIndex = gridY * cols + gridX;
+        Cell targetCell = MapManager.Instance.Cells[cellIndex];
 
-        if (cellIndex >= 0 && cellIndex < MapManager.Instance.Cells.Count)
+        if (targetCell == null || !targetCell.CanAcceptDrop)
         {
-            Cell targetCell = MapManager.Instance.Cells[cellIndex];
-
-            if (targetCell != null && targetCell.CanAcceptDrop)
-            {
-                Debug.Log("Cell can accept drop, processing...");
-
-                SpriteRenderer assetSprite = this.GetComponent<SpriteRenderer>();
-
-                if (assetSprite != null)
-                { 
-                    if (monster != null)
-                    {
-                        int objectType = 2; // per ora è static
-                        targetCell.UpdateValue(objectType);
-                        Debug.Log($"Updated cell with objectType: {objectType}");
-                    }
-                    else if (character != null)
-                    {       
-                        int objectType = 3;
-                        targetCell.UpdateValue(objectType);
-                    }
-                    targetCell.AddAsset(assetSprite);
-                    OnSuccessfullyPlaced();
-                }
-                else
-                {
-                    Debug.LogError("SpriteRenderer is null on draggable!");
-                    ResetDraggable();
-                }
-            }
-            else
-            {
-                Debug.Log($"Cell cannot accept drop. TargetCell: {targetCell}, canAcceptDrop: {targetCell?.CanAcceptDrop}");
-                ResetDraggable();
-            }
-        }
-        else
-        {
-            Debug.LogError($"Invalid cell index: {cellIndex}. Grid bounds: {cols}x{rows}");
             ResetDraggable();
+            return;
         }
+
+        int objectType = GetObjectType();
+        if (objectType == 0)
+        {
+            ResetDraggable();
+            return;
+        }
+
+        targetCell.UpdateValue(objectType);
+        targetCell.AddAsset(spriteRenderer);
+
+        OnSuccessfullyPlaced();
+    }
+
+    #endregion
+
+    #region Helpers
+
+    private int GetObjectType()
+    {
+        if (AssignedEntity is Monster m) return 2;
+        if (AssignedEntity is Character c) return 3;
+        return 0;
+    }
+
+    private void UpdateColor()
+    {
+        if (spriteRenderer == null)
+            return;
+
+        if (AssignedEntity is Monster m) 
+            spriteRenderer.color = Color.red;
+        else if (AssignedEntity is Character c)
+            spriteRenderer.color = Color.green;
+        else
+            spriteRenderer.color = Color.white;
+    }
+
+    private Vector3 GetMouseWorldPosition()
+    {
+        Vector3 pos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        pos.z = -8f;
+        return pos;
     }
 
     private void OnSuccessfullyPlaced()
     {
-        Debug.Log($"Draggable successfully placed at ({gridX}, {gridY})");
+        Debug.Log($"Placed at ({GridX}, {GridY})");
         ResetDraggable();
-        // The Manager will clean up the null reference in its Update
     }
 
     private void ResetDraggable()
     {
-       Destroy(gameObject);
+        Destroy(gameObject);
     }
 
+    #endregion
 }

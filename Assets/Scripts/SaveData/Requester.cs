@@ -101,7 +101,7 @@ public class Requester
                 var obstacle = new Obstacle
                 {
                     Name = obj["Name"]?.ToString(),
-                    Description = obj["Description"]?.ToString(),
+                    Bio = obj["Bio"]?.ToString(),
                     HP = obj["HP"].Value<int>()
                  };
                  listObstacles.Add(obstacle);

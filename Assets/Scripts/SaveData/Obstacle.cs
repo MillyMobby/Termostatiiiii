@@ -1,7 +1,5 @@
 [System.Serializable]
-public class Obstacle 
+public class Obstacle : WorldEntity
 {
-	public string Name { get; set; }
-	public string Description { get; set; }
-	public int HP { get; set; }
+	// * boh forse dovrebbe avere altri dettagli? 
 }

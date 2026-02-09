@@ -25,13 +25,10 @@ public class MasterPopup : MonoBehaviour
     [SerializeField] private EntityPopup entityPrefab;
 
     [SerializeField] GameObject draggablePrefab;
-
-
-    private List<Entity> entityMonsters = new List<Entity>();
-    private List<Entity> entityObstacles = new List<Entity>();
+    private List<Entity> allEntities = new List<Entity>();
 
     // Press-and-hold variables
-    private Dictionary<GameObject, Monster> buttonMonsterMap = new Dictionary<GameObject, Monster>();
+    private Dictionary<GameObject, WorldEntity> buttonEntityMap = new Dictionary<GameObject, WorldEntity>();
     private Dictionary<GameObject, float> buttonPressStartTime = new Dictionary<GameObject, float>();
     private const float HOLD_DURATION = 0.5f; 
     private GameObject currentDraggingButton;
@@ -43,14 +40,14 @@ public class MasterPopup : MonoBehaviour
 
         foreach (Monster m in Persist.GetMonsters())
         {
-            entityMonsters.Add(new Entity(path, m.Name));
+            allEntities.Add(new Entity(path, m.Name));
         }
 
 
         path = "Sprites/Icons/obstacleIcon";
         foreach (Obstacle o in Persist.GetObstacles())
         {
-            entityObstacles.Add(new Entity(path, o.Name));
+            allEntities.Add(new Entity(path, o.Name));
         }
 
         GenerateList();
@@ -59,17 +56,16 @@ public class MasterPopup : MonoBehaviour
 
     public void GenerateList()
     {
-        List<Monster> monsterList = Persist.GetMonsters();
-        List<Obstacle> obstacleList = Persist.GetObstacles();
+        List<WorldEntity> entityList = Persist.GetMonsters().Cast<WorldEntity>()
+                                .Concat(Persist.GetObstacles().Cast<WorldEntity>()).ToList();
 
-        for (int i = 0; i < Persist.GetMonsters().Count; i++)
+        for (int i = 0; i < entityList.Count; i++)
         {
             EntityPopup newEntity = Instantiate(entityPrefab, canvas);
-            newEntity.Init(entityMonsters[i].icon, entityMonsters[i].name);
-            buttonMonsterMap[newEntity.gameObject] = monsterList[i];
+            newEntity.Init(newSprite: allEntities[i].icon, newName: allEntities[i].name);
+            buttonEntityMap[newEntity.gameObject] = entityList[i];
             AddPressAndHoldEvents(newEntity.gameObject);
-        }
-    
+        }    
     }
 
 
@@ -183,10 +179,10 @@ public class MasterPopup : MonoBehaviour
 
     private void CreateAndStartDragging(GameObject button)
     {
-        if (!buttonMonsterMap.ContainsKey(button))
+        if (!buttonEntityMap.ContainsKey(button))
             return;
 
-        Monster monster = buttonMonsterMap[button];
+        WorldEntity e = buttonEntityMap[button];
 
         if (draggablePrefab == null)
         {
@@ -213,13 +209,13 @@ public class MasterPopup : MonoBehaviour
         if (draggable != null)
         {
             // Initialize with monster data
-            draggable.Monster = monster;
+            draggable.AssignedEntity = e;
             StartCoroutine(StartDraggingNextFrame(draggable));
 
             // Add to manager
             MapManager.Instance.AddDraggableAsset(draggable);
 
-            Debug.Log($"Created draggable for {monster.Name} and started dragging");
+            Debug.Log($"Created draggable for {e.Name} and started dragging");
         }
         else
         {
@@ -271,9 +267,9 @@ public class MasterPopup : MonoBehaviour
 
     void OnClickButton(GameObject button)
     {
-        if (buttonMonsterMap.ContainsKey(button))
+        if (buttonEntityMap.ContainsKey(button))
         {
-            Monster monster = buttonMonsterMap[button];
+            WorldEntity e = buttonEntityMap[button];
         }
     }
 
