@@ -102,7 +102,8 @@ public class Requester
                 {
                     Name = obj["Name"]?.ToString(),
                     Bio = obj["Bio"]?.ToString(),
-                    HP = obj["HP"].Value<int>()
+                    Max_Pf = obj["Max_Pf"].Value<int>(),
+                    Curr_Pf = obj["Current_Pf"].Value<int>()
                  };
                  listObstacles.Add(obstacle);
             }

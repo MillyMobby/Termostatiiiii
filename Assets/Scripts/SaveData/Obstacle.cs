@@ -1,5 +1,5 @@
 [System.Serializable]
 public class Obstacle : WorldEntity
 {
-	// * boh forse dovrebbe avere altri dettagli? 
+	public int Current_Pf { get; set; }
 }

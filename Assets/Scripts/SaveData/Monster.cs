@@ -1,8 +1,6 @@
 [System.Serializable]
-public class Monster : WorldEntity
-{   public int Max_Pf { get; set; }
-   public int AC { get; set; }
-   public int Initiative { get; set; }
+public class Monster : CreatureEntity
+{
    public float? CR { get; set; }
    public string Type { get; set; }
 }
