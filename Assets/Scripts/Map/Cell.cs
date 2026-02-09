@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,7 +20,17 @@ public class Cell : MonoBehaviour
 
     [Header("Content settings")]
     [SerializeField] private Image cellBackground;
+    public Image CellBackground
+    {
+        get => cellBackground;
+        set => cellBackground = value;
+    }
     [SerializeField] private Image contentRenderer;
+    public Image ContentRenderer
+    {
+        get => contentRenderer;
+        set => contentRenderer = value;
+    }
 
     private bool canAcceptDrop = false;
     public bool CanAcceptDrop => canAcceptDrop;
@@ -70,13 +81,14 @@ public class Cell : MonoBehaviour
     }
 
 
-    public void Init(int x, int y, int objectType)
+    public void Init(int x, int y, int objectType, bool generateBackground = true, Sprite sprite = null)
     {
         this.objectType = objectType;
         this.x = x;
         this.y = y;
 
-        GenerateSprite();
+        if (generateBackground)
+            GenerateSprite();
 
         if (objectType != 0)
         {
@@ -86,7 +98,8 @@ public class Cell : MonoBehaviour
             if (contentRenderer != null) 
             {
                 contentRenderer.enabled = true;
-                contentRenderer.sprite = getColor(objectType);
+                if (sprite != null) contentRenderer.sprite = sprite;
+                else contentRenderer.sprite = getColor(objectType);
             }
         }
         else
@@ -119,5 +132,12 @@ public class Cell : MonoBehaviour
         string path = $"Sprites/Cells/{strVal}";
         cellBackground.sprite = Resources.Load<Sprite>(path);
     }
+
+
+    public void UpdateCoordinates(int newX, int newY)
+    {
+        x = newX;
+        y = newY;
+    } 
 
 }

@@ -109,10 +109,10 @@ public class MasterPopup : MonoBehaviour
 
         StartCoroutine(CheckForHoldCompletion(button));
 
-        Debug.Log("Button pressed down - starting hold timer");
+        //Debug.Log("Button pressed down - starting hold timer");
     }
 
-    void release (GameObject button, BaseEventData data) // your inibithions feel the rain on your skin
+    void release(GameObject button, BaseEventData data) // your inibithions feel the rain on your skin
     {
 
         ResetButtonVisual(button);
@@ -186,7 +186,7 @@ public class MasterPopup : MonoBehaviour
 
         if (draggablePrefab == null)
         {
-            Debug.LogError("draggablePrefab is not assigned!");
+            //Debug.LogError("draggablePrefab is not assigned!");
             return;
         }
 
@@ -208,6 +208,16 @@ public class MasterPopup : MonoBehaviour
 
         if (draggable != null)
         {
+            string spriteName = e switch
+            {
+                Monster => "enemyIcon",
+                Obstacle => "obstacleIcon",
+                _ => "enemyIcon"
+            };
+
+            draggable.gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>($"Sprites/Icons/{spriteName}");
+            draggable.gameObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+
             // Initialize with monster data
             draggable.AssignedEntity = e;
             StartCoroutine(StartDraggingNextFrame(draggable));
@@ -215,11 +225,11 @@ public class MasterPopup : MonoBehaviour
             // Add to manager
             MapManager.Instance.AddDraggableAsset(draggable);
 
-            Debug.Log($"Created draggable for {e.Name} and started dragging");
+            //Debug.Log($"Created draggable for {e.Name} and started dragging");
         }
         else
         {
-            Debug.LogError("Failed to get DraggableAsset component!");
+            //Debug.LogError("Failed to get DraggableAsset component!");
             Destroy(draggableObj);
         }
     }
@@ -239,6 +249,11 @@ public class MasterPopup : MonoBehaviour
             draggable.SendMessage("OnMouseDown", SendMessageOptions.DontRequireReceiver);
         }
 
+        // * ---- nuovo codice
+        if (canvas != null)
+            canvas.gameObject.SetActive(false);
+        // * ----
+
         StartCoroutine(UpdateDraggablePosition(draggable));
     }
 
@@ -251,6 +266,12 @@ public class MasterPopup : MonoBehaviour
             draggable.transform.position = mousePos;
             yield return null;
         }
+
+
+        // * ---- nuovo codice
+        if (canvas != null)
+            canvas.gameObject.SetActive(true);
+        // * ----
 
         // Mouse released - trigger the drop
         draggable.SendMessage("OnMouseUp", SendMessageOptions.DontRequireReceiver);

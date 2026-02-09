@@ -6,8 +6,11 @@ public class Persist : MonoBehaviour
 {
 
     private static List<Character> characters;
+    public static List<Character> Characters => characters;
     private static List<Monster> monsters;
+    public static List<Monster> Monsters => monsters;
     private static List<Obstacle> obstacles;
+    public static List<Obstacle> Obstacles => obstacles;
 
     // * data load settings
     public static event Action OnDataLoaded;
@@ -42,8 +45,8 @@ public class Persist : MonoBehaviour
     }
 
 
-    public static List<Character> GetCharacters() => characters;
-    public static List<Monster> GetMonsters() => monsters;
-    public static List<Obstacle> GetObstacles() => obstacles;
-
+    public static List<Character> GetCharacters() { return characters; }
+    public static List<Obstacle> GetObstacles() { return obstacles; }
+    public static List<Monster> GetMonsters() { return monsters; }
+ 
 }

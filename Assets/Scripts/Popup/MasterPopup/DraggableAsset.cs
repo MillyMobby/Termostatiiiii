@@ -150,6 +150,7 @@ public class DraggableAsset : MonoBehaviour
         }
 
         int objectType = GetObjectType();
+        Debug.Log($"Object type: {objectType}");
         if (objectType == 0)
         {
             ResetDraggable();
@@ -170,6 +171,7 @@ public class DraggableAsset : MonoBehaviour
     {
         if (AssignedEntity is Monster m) return 2;
         if (AssignedEntity is Character c) return 3;
+        if (AssignedEntity is Obstacle o) return 1;
         return 0;
     }
 
@@ -195,7 +197,7 @@ public class DraggableAsset : MonoBehaviour
 
     private void OnSuccessfullyPlaced()
     {
-        Debug.Log($"Placed at ({GridX}, {GridY})");
+        //Debug.Log($"Placed at ({GridX}, {GridY})");
         ResetDraggable();
     }
 

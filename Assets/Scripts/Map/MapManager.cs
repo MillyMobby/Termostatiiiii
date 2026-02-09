@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MapManager : MonoBehaviour
 {
@@ -135,12 +136,11 @@ public class MapManager : MonoBehaviour
             }
         }
     }
-
-
     public void UpdateGrid(int[] newMatrix)
     {
         List<int> changedIndices = new List<int>();
         List<int> values = new List<int>();
+        List<Sprite> sprites = new List<Sprite>();
 
         for (int i = 0; i < inputMatrix.Length; i++)
         {
@@ -148,8 +148,16 @@ public class MapManager : MonoBehaviour
             {
                 changedIndices.Add(i);
                 values.Add(inputMatrix[i]);
-                cells[i].UpdateValue(newMatrix[i]);
+                Debug.Log($"Something has changed at index {i}, old value {inputMatrix[i]} - new value {newMatrix[i]}");
             }
+        }
+
+        if (changedIndices.Count > 2)
+        {
+            inputMatrix = newMatrix;
+            ClearGrid();
+            DrawGrid();
+            return;
         }
 
         if (changedIndices.Count == 2)
@@ -160,7 +168,6 @@ public class MapManager : MonoBehaviour
         inputMatrix = (int[])newMatrix.Clone();
     }
 
-
     private void SwapCells(int indexA, int indexB, int objectTypeA, int objectTypeB)
     {
         if (indexA >= cells.Count || indexB >= cells.Count) return;
@@ -168,14 +175,25 @@ public class MapManager : MonoBehaviour
         Cell cellA = cells[indexA];
         Cell cellB = cells[indexB];
 
+        Sprite spriteA = cellA.ContentRenderer.sprite;
+        Sprite spriteB = cellB.ContentRenderer.sprite;
+
+        Sprite tempSprite = cellA.CellBackground.sprite;
+        cellA.CellBackground.sprite = cellB.CellBackground.sprite;
+        cellB.CellBackground.sprite = tempSprite;
+
         Vector3 tempPos = cellA.transform.localPosition;
         cellA.transform.localPosition = cellB.transform.localPosition;
         cellB.transform.localPosition = tempPos;
 
         int tempX = cellA.X;
         int tempY = cellA.Y;
-        cellA.Init(cellB.X, cellB.Y, objectTypeA); 
-        cellB.Init(tempX, tempY, objectTypeB);
+
+        cellA.UpdateCoordinates(cellB.X, cellB.Y);
+        cellB.UpdateCoordinates(tempX, tempY);
+
+        cellA.Init(cellB.X, cellB.Y, objectTypeA, generateBackground: false, sprite: spriteA); 
+        cellB.Init(tempX, tempY, objectTypeB, generateBackground: false, sprite: spriteB);
     
         cells[indexA] = cellB;
         cells[indexB] = cellA;
@@ -239,7 +257,7 @@ public class MapManager : MonoBehaviour
             {
                 if (_masterAssets[i].GridX == cell.X && _masterAssets[i].GridY == cell.Y)
                 {
-                    Debug.Log($"PF = {_masterAssets[i].AssignedEntity.HP}, AC = {_masterAssets[i].AssignedEntity.Bio}");
+                    Debug.Log($"PF = {_masterAssets[i].AssignedEntity.Max_Pf}, AC = {_masterAssets[i].AssignedEntity.Bio}");
                     return;
 
                 }

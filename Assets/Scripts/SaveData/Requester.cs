@@ -29,7 +29,7 @@ public class Requester
                     Bio = obj["Bio"]?.ToString(),
                     AC = obj["AC"].Value<int>(),
                     Initiative = obj["Initiative"].Value<int>(),
-                    Actions = new List<Action>(),   //qui dobbiamo richiamare le funzioni di recupero azioni e incantesimi e popolare la lista
+                    Actions = new List<CreatureEntity.Action>(),   //qui dobbiamo richiamare le funzioni di recupero azioni e incantesimi e popolare la lista
                     Pass_Perc = obj["Pass_Perc"].Value<int>(),
                     Hit_Dice = obj["Hit_Dice"]?.ToString(),
                     Str = obj["Str"].Value<int>(),
@@ -72,7 +72,7 @@ public class Requester
                     Bio = obj["Bio"]?.ToString(),
                     AC = obj["AC"].Value<int>(),
                     Initiative = obj["Initiative"].Value<int>(),
-                    Actions = new List<Action>(),
+                    Actions = new List<CreatureEntity.Action>(),
                     CR = obj["CR"]?.Value<float?>(),
                     Type = obj["Type"]?.ToString(),
                  };
@@ -101,9 +101,9 @@ public class Requester
                 var obstacle = new Obstacle
                 {
                     Name = obj["Name"]?.ToString(),
-                    Max_Pf = obj["Max_Pf"].Value<int>(),
-                    Curr_Pf = obj["Current_Pf"].Value<int>(),
-                    Bio = obj["Bio"]?.ToString()
+                    Max_Pf = obj["Max_PF"].Value<int>(),
+                    Current_Pf = obj["Current_PF"].Value<int>(),
+                    Bio = obj["Description"]?.ToString()
                  };
                  listObstacles.Add(obstacle);
             }

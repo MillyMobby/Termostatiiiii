@@ -15,5 +15,5 @@ public class CreatureEntity : WorldEntity
         public int damage;
     }
 
-    private List<Action> Actions { get; set; };
+    public List<Action> Actions { get; set; }
 }
