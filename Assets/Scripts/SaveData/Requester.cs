@@ -24,12 +24,12 @@ public class Requester
             {
                 var character = new Character
                 {
-                    Class = obj["Class"]?.ToString(),
-                    Level = obj["Level"].Value<int>(),
-                    Race = obj["Race"]?.ToString(),
                     Name = obj["Name"]?.ToString(),
+                    Max_Pf = obj["Max_Pf"].Value<int>(),
+                    Bio = obj["Bio"]?.ToString(),
                     AC = obj["AC"].Value<int>(),
                     Initiative = obj["Initiative"].Value<int>(),
+                    Actions = new List<Action>(),   //qui dobbiamo richiamare le funzioni di recupero azioni e incantesimi e popolare la lista
                     Pass_Perc = obj["Pass_Perc"].Value<int>(),
                     Hit_Dice = obj["Hit_Dice"]?.ToString(),
                     Str = obj["Str"].Value<int>(),
@@ -39,15 +39,15 @@ public class Requester
                     Wis = obj["Wis"].Value<int>(),
                     Cha = obj["Cha"].Value<int>(),
                     Curr_Pf = obj["Curr_Pf"].Value<int>(),
-                    Max_Pf = obj["Max_Pf"].Value<int>(),
-                    Bio = obj["Bio"]?.ToString()
-                 };
+                    Class = obj["Class"]?.ToString(),
+                    Level = obj["Level"].Value<int>(),
+                    Race = obj["Race"]?.ToString()
+                };
                  characters.Add(character);
             }
             return characters;
         }
     }
-
 
     public static async Task<List<Monster>> RequestMonsters() {
         List<Monster> listMonsters = new List<Monster>();
@@ -68,19 +68,19 @@ public class Requester
                 var monster = new Monster
                 {
                     Name = obj["Name"]?.ToString(),
-                    CR = obj["CR"]?.Value<float?>(),
-                    Type = obj["Type"]?.ToString(),
                     Max_Pf = obj["Max_Pf"].Value<int>(),
+                    Bio = obj["Bio"]?.ToString(),
                     AC = obj["AC"].Value<int>(),
                     Initiative = obj["Initiative"].Value<int>(),
-                    Bio = obj["Bio"]?.ToString()
+                    Actions = new List<Action>(),
+                    CR = obj["CR"]?.Value<float?>(),
+                    Type = obj["Type"]?.ToString(),
                  };
                  listMonsters.Add(monster);
             }
             return listMonsters;
         }
     }
-
 
     public static async Task<List<Obstacle>> RequestObstacles() {
         List<Obstacle> listObstacles = new List<Obstacle>();
@@ -101,15 +101,13 @@ public class Requester
                 var obstacle = new Obstacle
                 {
                     Name = obj["Name"]?.ToString(),
-                    Bio = obj["Bio"]?.ToString(),
                     Max_Pf = obj["Max_Pf"].Value<int>(),
-                    Curr_Pf = obj["Current_Pf"].Value<int>()
+                    Curr_Pf = obj["Current_Pf"].Value<int>(),
+                    Bio = obj["Bio"]?.ToString()
                  };
                  listObstacles.Add(obstacle);
             }
             return listObstacles;
         }
     } 
-
-
 }
