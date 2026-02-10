@@ -32,6 +32,20 @@ public class Persist : MonoBehaviour
 
         IsLoaded = true;
         OnDataLoaded?.Invoke();
+
+        foreach (var character in characters)
+        {
+            List<CreatureEntity.Action> actions = await Requester.RequestActions(character.Name);
+            List<CreatureEntity.Action> spells = await Requester.RequestSpells(character.Name);
+            actions.AddRange(spells);
+            character.Actions = actions;
+        }
+
+        foreach (var monster in monsters)
+        {
+            List<CreatureEntity.Action> actions = await Requester.RequestMonsterActions(monster.Name);
+            monster.Actions = actions;
+        }
     }
 
 
@@ -41,9 +55,29 @@ public class Persist : MonoBehaviour
             Debug.Log("No characters loaded.");
             return;
         }
-        foreach (Character c in characters) Debug.Log(c.Name);
-    }
+        foreach (Character c in characters)
+        {
+            Debug.Log(c.Name);
+            foreach (CreatureEntity.Action a in c.Actions)
+            {
+                Debug.Log(a.actionName);
+            }
+        }
 
+        if (monsters == null)
+        {
+            Debug.Log("No monsters loaded.");
+            return;
+        }
+        foreach (Monster m in monsters)
+        {
+            Debug.Log(m.Name);
+            foreach (CreatureEntity.Action a in m.Actions)
+            {
+                Debug.Log(a.actionName);
+            }
+        }
+    }
 
     public static List<Character> GetCharacters() { return characters; }
     public static List<Obstacle> GetObstacles() { return obstacles; }

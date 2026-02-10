@@ -12,7 +12,7 @@ public class CreatureEntity : WorldEntity
         public string actionName;
         public string description;
         public int range;
-        public int damage;
+        public string damage;
     }
 
     public List<Action> Actions { get; set; }

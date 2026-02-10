@@ -22,6 +22,7 @@ public class Requester
             JArray array = JArray.Parse(json);
             foreach (JObject obj in array.Children<JObject>())
             {
+                
                 var character = new Character
                 {
                     Name = obj["Name"]?.ToString(),
@@ -29,7 +30,7 @@ public class Requester
                     Bio = obj["Bio"]?.ToString(),
                     AC = obj["AC"].Value<int>(),
                     Initiative = obj["Initiative"].Value<int>(),
-                    Actions = new List<CreatureEntity.Action>(),   //qui dobbiamo richiamare le funzioni di recupero azioni e incantesimi e popolare la lista
+                    Actions = new List<CreatureEntity.Action>(),   
                     Pass_Perc = obj["Pass_Perc"].Value<int>(),
                     Hit_Dice = obj["Hit_Dice"]?.ToString(),
                     Str = obj["Str"].Value<int>(),
@@ -109,5 +110,95 @@ public class Requester
             }
             return listObstacles;
         }
-    } 
+    }
+
+    public static async Task<List<CreatureEntity.Action>> RequestActions(string name)
+    {
+        List<CreatureEntity.Action> actions = new List<CreatureEntity.Action>();
+        UnityWebRequest www = UnityWebRequest.Get("https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/characters/actions?name=" + name);
+        await www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("Couldn't send GET request: " + www.error);
+            return actions;
+        }
+        else
+        {
+            var json = www.downloadHandler.text;
+            JArray array = JArray.Parse(json);
+            foreach (JObject obj in array.Children<JObject>())
+            {
+                var action = new CreatureEntity.Action
+                {
+                    actionName = obj["Name"]?.ToString(),
+                    description = obj["Description"]?.ToString(),
+                    range = obj["Range"].Value<int>(),
+                    damage = obj["Damage"]?.ToString()
+                };
+                actions.Add(action);
+            }
+            return actions;
+        }
+    }
+
+    public static async Task<List<CreatureEntity.Action>> RequestMonsterActions(string name)
+    {
+        List<CreatureEntity.Action> actions = new List<CreatureEntity.Action>();
+        UnityWebRequest www = UnityWebRequest.Get("https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/monsters/actions?name=" + name);
+        await www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("Couldn't send GET request: " + www.error);
+            return actions;
+        }
+        else
+        {
+            var json = www.downloadHandler.text;
+            JArray array = JArray.Parse(json);
+            foreach (JObject obj in array.Children<JObject>())
+            {
+                var action = new CreatureEntity.Action
+                {
+                    actionName = obj["Name"]?.ToString(),
+                    description = obj["Description"]?.ToString(),
+                    range = obj["Range"].Value<int>(),
+                    damage = obj["Damage"]?.ToString()
+                };
+                actions.Add(action);
+            }
+            return actions;
+        }
+    }
+
+    public static async Task<List<CreatureEntity.Action>> RequestSpells(string name)
+    {
+        List<CreatureEntity.Action> spells = new List<CreatureEntity.Action>();
+        UnityWebRequest www = UnityWebRequest.Get("https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/characters/spells?name=" + name);
+        await www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("Couldn't send GET request: " + www.error);
+            return spells;
+        }
+        else
+        {
+            var json = www.downloadHandler.text;
+            JArray array = JArray.Parse(json);
+            foreach (JObject obj in array.Children<JObject>())
+            {
+                var spell = new CreatureEntity.Action
+                {
+                    actionName = obj["Name"]?.ToString(),
+                    description = obj["Description"]?.ToString(),
+                    range = obj["Range"].Value<int>(),
+                    damage = obj["Damage"]?.ToString()
+                };
+                spells.Add(spell);
+            }
+            return spells;
+        }
+    }
 }
