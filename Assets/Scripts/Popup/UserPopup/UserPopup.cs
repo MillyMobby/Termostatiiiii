@@ -12,7 +12,7 @@ using static UnityEngine.EventSystems.EventTrigger;
 public class UserPopup : MonoBehaviour
 {
     private Character currentPlayer;
-    private int color = 1;
+    private int color = 1; 
 
     public class Entity //bottone
     {
@@ -71,18 +71,6 @@ public class UserPopup : MonoBehaviour
             return;
         }
 
-        if (entityPrefab == null)
-        {
-            Debug.LogError("Cannot generate list - entityPrefab is null!");
-            return;
-        }
-
-        if (canvas == null)
-        {
-            Debug.LogError("Cannot generate list - canvas is null!");
-            return;
-        }
-
         for (int i = 0; i < currentPlayer.Actions.Count; i++)
         {
             if (i >= allEntities.Count)
@@ -94,25 +82,22 @@ public class UserPopup : MonoBehaviour
             EntityPopup newEntity = Instantiate(entityPrefab, canvas);
             newEntity.Init(newSprite: allEntities[i].icon, newName: allEntities[i].name);
 
-            // AGGIUNGI UN BOTTONE SE NON ESISTE
+            
             Button actionButton = newEntity.GetComponent<Button>();
             if (actionButton == null)
             {
                 Debug.Log("Adding Button component to EntityPopup...");
                 actionButton = newEntity.gameObject.AddComponent<Button>();
 
-                // Configura il Button
                 Image buttonImage = newEntity.GetComponent<Image>();
                 if (buttonImage != null)
                 {
                     actionButton.targetGraphic = buttonImage;
                 }
 
-                // Opzionale: rimuovi effetti di transizione se vuoi
-                actionButton.transition = Selectable.Transition.None;
+
             }
 
-            // Salva l'azione in una variabile locale per la closure
             CreatureEntity.Action currentAction = currentPlayer.Actions[i];
 
             actionButton.onClick.AddListener(() =>
@@ -121,7 +106,6 @@ public class UserPopup : MonoBehaviour
                 OnActionButtonClicked(currentAction);
             });
 
-            Debug.Log($"Added click listener for action: {currentAction.actionName}");
         }
 
         Debug.Log($"Created {currentPlayer.Actions.Count} action buttons");
@@ -129,10 +113,7 @@ public class UserPopup : MonoBehaviour
 
     void OnActionButtonClicked(CreatureEntity.Action action)
     {
-        Debug.Log($"Action executed: {action.actionName}");
-
-
-
+        
         Debug.Log($"Range: {action.range}\n");
         DisplayRange(action.range);
     }
