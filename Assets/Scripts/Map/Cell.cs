@@ -158,13 +158,11 @@ public class Cell : MonoBehaviour
     {
         if (cellBackground == null) return;
 
-        // Stop any existing highlight coroutine
         if (highlightCoroutine != null)
         {
             StopCoroutine(highlightCoroutine);
         }
 
-        // Start new highlight coroutine
         highlightCoroutine = StartCoroutine(HighlightForSecondsCoroutine(color, 1f));
     }
 
@@ -172,15 +170,12 @@ public class Cell : MonoBehaviour
     {
         if (cellBackground == null) yield break;
 
-        // Store current color before highlighting
         Color currentColor = cellBackground.color;
 
-        // Apply highlight
         Color tintedColor = Color.Lerp(originalBackgroundColor, color, highlightIntensity);
         cellBackground.color = tintedColor;
         isHighlighted = true;
 
-        // Wait for specified duration
         yield return new WaitForSeconds(duration);
 
         // Restore original color
