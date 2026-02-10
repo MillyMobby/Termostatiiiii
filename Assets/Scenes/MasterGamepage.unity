@@ -167,7 +167,7 @@ MonoBehaviour:
   _tilePrefab: {fileID: 4250931230596665827, guid: b01e78f14d2704ff2b31ad5c82c34b27, type: 3}
   _gridCanvas: {fileID: 1320177269}
   _cellSize: 100
-  draggablePrefab: {fileID: 8999777510355309203, guid: e5c76c90352896b499d09b63fab8130d, type: 3}
+  draggablePrefab: {fileID: 4881753904704010058, guid: f1f077dfb60ed4da982e934893e94ca6, type: 3}
 --- !u!1 &424585553
 GameObject:
   m_ObjectHideFlags: 0
@@ -569,8 +569,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1065a481ca0284b1b9419c11f0104e63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatrixReceiver
-  serverIP: 127.0.0.1
-  port: 6969
+  rows: 6
+  cols: 10
+  updateInterval: 0.5
+  logUpdates: 1
 --- !u!4 &938095197
 Transform:
   m_ObjectHideFlags: 0

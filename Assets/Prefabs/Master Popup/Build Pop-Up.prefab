@@ -300,7 +300,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MasterPopup
   canvas: {fileID: 286363364726359857}
   entityPrefab: {fileID: 8057304894881886278, guid: f1f077dfb60ed4da982e934893e94ca6, type: 3}
-  draggablePrefab: {fileID: 8999777510355309203, guid: e5c76c90352896b499d09b63fab8130d, type: 3}
+  draggablePrefab: {fileID: 4881753904704010058, guid: f1f077dfb60ed4da982e934893e94ca6, type: 3}
 --- !u!1 &4041520219808133790
 GameObject:
   m_ObjectHideFlags: 0
