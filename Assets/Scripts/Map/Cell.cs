@@ -5,7 +5,7 @@ using System.Collections;
 
 public class Cell : MonoBehaviour
 {
-    [SerializeField] private GameObject manager;
+    //[SerializeField] private GameObject manager;
 
     [Header("Position of the cell")]
     [SerializeField] private int x;

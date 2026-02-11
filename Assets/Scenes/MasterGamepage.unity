@@ -166,6 +166,8 @@ MonoBehaviour:
   _matrixReceiver: {fileID: 938095196}
   _tilePrefab: {fileID: 4250931230596665827, guid: b01e78f14d2704ff2b31ad5c82c34b27, type: 3}
   _gridCanvas: {fileID: 1320177269}
+  infoDisplayPrefab: {fileID: 6670795537147720820, guid: 1d929b7da06922b45881fbdb64144b3b, type: 3}
+  infoDisplayParent: {fileID: 0}
   _cellSize: 100
   draggablePrefab: {fileID: 4881753904704010058, guid: f1f077dfb60ed4da982e934893e94ca6, type: 3}
 --- !u!1 &424585553

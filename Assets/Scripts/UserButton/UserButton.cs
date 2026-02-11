@@ -61,7 +61,7 @@ public class UserButton : MonoBehaviour
         }
 
 
-        buttonComponent.onClick.RemoveAllListeners();
+        //buttonComponent.onClick.RemoveAllListeners();
         buttonComponent.onClick.AddListener(() => onClickAction.Invoke());
     }
 }

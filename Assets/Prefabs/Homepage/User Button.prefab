@@ -111,6 +111,7 @@ GameObject:
   - component: {fileID: 5672882132792673901}
   - component: {fileID: 7937266746243825160}
   - component: {fileID: -4152007061976984923}
+  - component: {fileID: 4624304127245683165}
   m_Layer: 5
   m_Name: User Button
   m_TagString: Untagged
@@ -221,7 +222,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1348453105169057490}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 11500000, guid: 0fb57160984a8f542b20a0870b0c0959, type: 3}
+        m_TargetAssemblyTypeName: UnityEditor.MonoScript, UnityEditor.CoreModule
+        m_MethodName: set_name
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: SceneButtonManager.LoadScene
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &5672882132792673901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,6 +291,19 @@ MonoBehaviour:
   classImage: {fileID: 8354235573299502742}
   borderImage: {fileID: 3531841808401693817}
   buttonComponent: {fileID: 767791539844597503}
+--- !u!114 &4624304127245683165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6332799243785944308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9074a5a3af163415badaa87c5235de01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SceneButtonManager
+  targetScene: {fileID: 102900000, guid: 168ce90d061ef4a3e86cab22574e2628, type: 3}
 --- !u!1 &7965810084659387192
 GameObject:
   m_ObjectHideFlags: 0

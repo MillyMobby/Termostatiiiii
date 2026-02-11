@@ -59,6 +59,7 @@ public class UserPopup : MonoBehaviour
             }        
                  
         GenerateList();
+        MapManager.Instance.AssignCharacterInGrid(color, currentPlayer);
     }
 
     public void GenerateList()
@@ -112,16 +113,13 @@ public class UserPopup : MonoBehaviour
     }
 
     void OnActionButtonClicked(CreatureEntity.Action action)
-    {
-        
+    {    
         Debug.Log($"Range: {action.range}\n");
         DisplayRange(action.range);
     }
 
     public void DisplayRange(int range) {
-        MapManager.Instance.HighlightArea(color, range);
-        
-
+        if (range != 101) { MapManager.Instance.HighlightArea(color, range); }
 
     }
 }

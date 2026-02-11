@@ -10,7 +10,7 @@ private GameObject activePopup;
 
     public void OpenPopup()
     {
-        if (activePopup != null) return;
+        if (activePopup != null) { activePopup.SetActive(true); return; }
         activePopup = Instantiate(popupPrefab, canvasTransform);
 
         RectTransform rect = activePopup.GetComponent<RectTransform>();
@@ -29,6 +29,7 @@ private GameObject activePopup;
     public void DestroyPopup()
     {
         if (activePopup == null) return;
-        Destroy(activePopup);
+        activePopup.SetActive(false);
+        //Destroy(activePopup);
     }
 }
