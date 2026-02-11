@@ -39,7 +39,7 @@ public class Requester
                     Int = obj["Int"].Value<int>(),
                     Wis = obj["Wis"].Value<int>(),
                     Cha = obj["Cha"].Value<int>(),
-                    Curr_Pf = obj["Curr_Pf"].Value<int>(),
+                    Current_Pf = obj["Max_Pf"].Value<int>(),
                     Class = obj["Class"]?.ToString(),
                     Level = obj["Level"].Value<int>(),
                     Race = obj["Race"]?.ToString()
@@ -76,7 +76,8 @@ public class Requester
                     Actions = new List<CreatureEntity.Action>(),
                     CR = obj["CR"]?.Value<float?>(),
                     Type = obj["Type"]?.ToString(),
-                 };
+                    Current_Pf = obj["Max_Pf"].Value<int>()
+                };
                  listMonsters.Add(monster);
             }
             return listMonsters;
@@ -103,9 +104,9 @@ public class Requester
                 {
                     Name = obj["Name"]?.ToString(),
                     Max_Pf = obj["Max_PF"].Value<int>(),
-                    Current_Pf = obj["Current_PF"].Value<int>(),
-                    Bio = obj["Description"]?.ToString()
-                 };
+                    Bio = obj["Description"]?.ToString(),
+                    Current_Pf = obj["Max_PF"].Value<int>()
+                };
                  listObstacles.Add(obstacle);
             }
             return listObstacles;

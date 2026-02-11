@@ -27,11 +27,13 @@ public class Persist : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         characters = await Requester.RequestCharacters();
-        monsters = await Requester.RequestMonsters();
-        obstacles = await Requester.RequestObstacles();
-
+        Debug.Log("Ho caricato i pg");
         IsLoaded = true;
         OnDataLoaded?.Invoke();
+        monsters = await Requester.RequestMonsters();
+        Debug.Log("Ho caricato i mostri");
+        obstacles = await Requester.RequestObstacles();
+        Debug.Log("Ho caricato gli ostacoli");
 
         foreach (var character in characters)
         {
@@ -39,12 +41,14 @@ public class Persist : MonoBehaviour
             List<CreatureEntity.Action> spells = await Requester.RequestSpells(character.Name);
             actions.AddRange(spells);
             character.Actions = actions;
+            Debug.Log($"Ho caricato le azioni di {character.Name}");
         }
 
         foreach (var monster in monsters)
         {
             List<CreatureEntity.Action> actions = await Requester.RequestMonsterActions(monster.Name);
             monster.Actions = actions;
+            Debug.Log($"Ho caricato le azioni di {monster.Name}");
         }
     }
 

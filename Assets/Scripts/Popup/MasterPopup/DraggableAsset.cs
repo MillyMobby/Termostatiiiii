@@ -158,6 +158,7 @@ public class DraggableAsset : MonoBehaviour
         }
 
         targetCell.UpdateValue(objectType);
+        //crea instance
         targetCell.AddAsset(spriteRenderer);
 
         OnSuccessfullyPlaced();
