@@ -1,0 +1,146 @@
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class Cell : MonoBehaviour
+{
+    [SerializeField] private GameObject manager;
+  
+    [Header("Position of the cell")]
+    [SerializeField] private int x;
+    public int X => x;
+    [SerializeField] private int y;
+    public int Y => y;
+
+    [Header("Sprite for the entities")]
+    [SerializeField] private Sprite redPlayer;
+    [SerializeField] private Sprite greenPlayer;
+    [SerializeField] private Sprite bluePlayer;
+
+
+    [Header("Content settings")]
+    [SerializeField] private Image cellBackground;
+    public Image CellBackground
+    {
+        get => cellBackground;
+        set => cellBackground = value;
+    }
+    [SerializeField] private Image contentRenderer;
+    public Image ContentRenderer
+    {
+        get => contentRenderer;
+        set => contentRenderer = value;
+    }
+
+    private bool canAcceptDrop = false;
+    public bool CanAcceptDrop => canAcceptDrop;
+    private int objectType;
+    public int ObjectType => objectType;
+    private bool isButton = false;
+    public bool IsButton => isButton;
+    private WorldEntity currentEntity; 
+    public WorldEntity CurrentEntity => currentEntity;
+
+
+    public Sprite getColor(int type)
+    {
+        switch (type)
+        {
+            case 1: return redPlayer;
+            case 2: return greenPlayer;
+            case 3: return bluePlayer;
+            default: return null;
+        }
+    }
+
+
+    public void UpdateValue(int newValue)
+    {
+        objectType = newValue;
+
+        if (newValue != 0) isButton = true;
+
+        if (contentRenderer != null)
+        {
+            if (newValue == 0)
+            {
+                contentRenderer.enabled = false;
+                contentRenderer.sprite = null;
+                isButton = false;
+            } 
+            else
+            {
+                contentRenderer.enabled = true;
+                contentRenderer.sprite = getColor(newValue);
+                isButton = true;
+                canAcceptDrop = true;
+            }
+        }
+        else
+        {
+            Debug.LogError($"ContentRenderer is null on {gameObject.name}. Drag the child SpriteRenderer into this slot in the Inspector!");           
+        }
+    }
+
+
+    public void Init(int x, int y, int objectType, bool generateBackground = true, Sprite sprite = null)
+    {
+        this.objectType = objectType;
+        this.x = x;
+        this.y = y;
+
+        if (generateBackground)
+            GenerateSprite();
+
+        if (objectType != 0)
+        {
+            isButton = true;
+            canAcceptDrop = true;
+            
+            if (contentRenderer != null) 
+            {
+                contentRenderer.enabled = true;
+                if (sprite != null) contentRenderer.sprite = sprite;
+                else contentRenderer.sprite = getColor(objectType);
+            }
+        }
+        else
+        {
+            contentRenderer.enabled = false;
+            isButton = false;
+        }
+    }
+
+
+    public void AddAsset(SpriteRenderer asset, WorldEntity entity) 
+    {
+        if (contentRenderer != null && asset != null)
+        {
+            this.currentEntity = entity;
+            contentRenderer.enabled = true;
+            contentRenderer.sprite = asset.sprite;
+            contentRenderer.color = asset.color;
+            isButton = true;
+            canAcceptDrop = false;
+        }  
+    }
+
+
+    private void GenerateSprite()
+    {
+        System.Random rnd = new System.Random();
+        int value = rnd.Next(1, 5);
+        string strVal = value.ToString();
+
+        string path = $"Sprites/Cells/{strVal}";
+        cellBackground.sprite = Resources.Load<Sprite>(path);
+    }
+
+
+    public void UpdateCoordinates(int newX, int newY)
+    {
+        x = newX;
+        y = newY;
+    } 
+
+}
