@@ -6,6 +6,21 @@ using Newtonsoft.Json.Linq;
 
 public class Requester
 {
+    public static async Task<Character> RequestRandomCharacter()
+    {
+        // First, get all characters
+        List<Character> allCharacters = await RequestCharacters();
+
+        if (allCharacters == null || allCharacters.Count == 0)
+        {
+            Debug.Log("No characters available");
+            return null;
+        }
+
+        // Return a random character
+        int randomIndex = UnityEngine.Random.Range(0, allCharacters.Count);
+        return allCharacters[randomIndex];
+    }
     public static async Task<List<Character>> RequestCharacters() {
         List<Character> characters = new List<Character>();
         UnityWebRequest www = UnityWebRequest.Get("https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/characters");

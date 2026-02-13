@@ -1,6 +1,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class Cell : MonoBehaviour
 {
@@ -17,6 +18,11 @@ public class Cell : MonoBehaviour
     [SerializeField] private Sprite greenPlayer;
     [SerializeField] private Sprite bluePlayer;
 
+    [Header("Highlight settings")]
+    [SerializeField] [Range(0f, 1f)] private float highlightIntensity = 0.3f;
+    private Color originalBackgroundColor;
+    private bool isHighlighted = false;
+    private Coroutine highlightCoroutine;
 
     [Header("Content settings")]
     [SerializeField] private Image cellBackground;
@@ -39,6 +45,14 @@ public class Cell : MonoBehaviour
     private bool isButton = false;
     public bool IsButton => isButton;
 
+    void Start()
+    {
+        // Store the original background color
+        if (cellBackground != null)
+        {
+            originalBackgroundColor = cellBackground.color;
+        }
+    }
 
     public Sprite getColor(int type)
     {
@@ -138,6 +152,33 @@ public class Cell : MonoBehaviour
     {
         x = newX;
         y = newY;
-    } 
+    }
 
+    public void HighlightForOneSecond(Color color)
+    {
+        if (cellBackground == null) return;
+
+        if (highlightCoroutine != null)
+        {
+            StopCoroutine(highlightCoroutine);
+        }
+
+        highlightCoroutine = StartCoroutine(HighlightForSecondsCoroutine(color, 1f));
+    }
+
+    private IEnumerator HighlightForSecondsCoroutine(Color color, float duration)
+    {
+        if (cellBackground == null) yield break;
+
+        Color tintedColor = Color.Lerp(originalBackgroundColor, color, highlightIntensity);
+        cellBackground.color = tintedColor;
+        isHighlighted = true;
+
+        yield return new WaitForSeconds(duration);
+
+        // Restore original color
+        cellBackground.color = originalBackgroundColor;
+        isHighlighted = false;
+        highlightCoroutine = null;
+    }
 }

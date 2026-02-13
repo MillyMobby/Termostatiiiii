@@ -20,6 +20,12 @@ public class MapManager : MonoBehaviour
     [Header("Draggable settings")]
     [SerializeField] private GameObject draggablePrefab;
     private List<DraggableAsset> _masterAssets;
+    private Dictionary<Character, Vector2Int> players = new Dictionary<Character, Vector2Int>();
+    public Dictionary<Character, Vector2Int> Players
+    {
+        get => players;
+        set => players = value;
+    }
 
 
     [Header("Data")]
@@ -28,6 +34,20 @@ public class MapManager : MonoBehaviour
     private List<Cell> cells = new List<Cell> { };
     public List<Cell> Cells => cells;
 
+    public void AssignCharacterInGrid(int color, Character player)
+    {
+        for (int i = 0; i < inputMatrix.Length; i++)
+        {
+            if (inputMatrix[i] == color)
+            {
+                int row = i / _cols;
+                int col = i % _cols;
+
+                players[player] = new Vector2Int(col, row);
+
+            }
+        }
+    }
 
 
     void Awake()
@@ -221,6 +241,7 @@ public class MapManager : MonoBehaviour
                 Cell touchedCell = hit.collider.GetComponentInParent<Cell>();
                 if (touchedCell != null)
                 {
+                    touchedCell.HighlightForOneSecond(Color.green);
                     Debug.Log($"Clicked cell at ({touchedCell.X}, {touchedCell.Y})");
                     OnCellTouched(touchedCell.X, touchedCell.Y, touchedCell);
                 }
@@ -239,6 +260,7 @@ public class MapManager : MonoBehaviour
                 Cell touchedCell = hit.collider.GetComponentInParent<Cell>();
                 if (touchedCell != null)
                 {
+                    touchedCell.HighlightForOneSecond(Color.green);
                     Debug.Log($"Touched cell at ({touchedCell.X}, {touchedCell.Y})");
                     OnCellTouched(touchedCell.X, touchedCell.Y, touchedCell);
                 }
@@ -267,6 +289,45 @@ public class MapManager : MonoBehaviour
             // ! qui andranno mostrate le info della entity cliccata
         }
 
+    }
+    public void HighlightArea(int color, int range)
+    {
+        for (int i = 0; i < inputMatrix.Length; i++)
+        {
+            if (inputMatrix[i] == color)
+            {
+                int row = i / _cols;
+                int col = i % _cols;
+
+                //  bounds
+                int startX = col - range;
+                int endX = col + range;
+                int startY = row - range;
+                int endY = row + range;
+
+                startX = Mathf.Max(startX, 0);
+                endX = Mathf.Min(endX, _cols - 1);
+                startY = Mathf.Max(startY, 0);
+                endY = Mathf.Min(endY, _rows - 1);
+
+                // Highlight the square area
+                for (int y = startY; y <= endY; y++)
+                {
+                    for (int x = startX; x <= endX; x++)
+                    {
+                        int index = y * _cols + x;
+                        if (index >= 0 && index < cells.Count)
+                        {
+                            Cell c = cells[index];
+                            if (c != null)
+                            {
+                                c.HighlightForOneSecond(Color.red);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

@@ -885,7 +885,6 @@ GameObject:
   - component: {fileID: 4988197271238115606}
   - component: {fileID: 559074410567235150}
   - component: {fileID: 6086765953701970634}
-  - component: {fileID: 6004576884851178110}
   - component: {fileID: 7543757556283531017}
   m_Layer: 0
   m_Name: User Page Popup
@@ -975,20 +974,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6004576884851178110
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5772073804537137910}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4deb8a783242460bbb194b56aa1aa34, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MasterPopup
-  canvas: {fileID: 2235693005254117519}
-  entityPrefab: {fileID: 8057304894881886278, guid: f1f077dfb60ed4da982e934893e94ca6, type: 3}
 --- !u!114 &7543757556283531017
 MonoBehaviour:
   m_ObjectHideFlags: 0

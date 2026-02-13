@@ -1008,8 +1008,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ButtonSpawner
   userButtonPrefab: {fileID: -4152007061976984923, guid: 47db9ba07002b46fabd1dbd2f02800ea, type: 3}
   contentContainer: {fileID: 1148352818}
-  dndClass: thief
-  btnColor: {r: 0.8301887, g: 0.54432184, b: 0.78872913, a: 1}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
