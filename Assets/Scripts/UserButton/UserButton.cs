@@ -59,8 +59,6 @@ public class UserButton : MonoBehaviour
         {
             buttonComponent.image.color = buttonColor;
         }
-
-
         buttonComponent.onClick.RemoveAllListeners();
         buttonComponent.onClick.AddListener(() => onClickAction.Invoke());
     }

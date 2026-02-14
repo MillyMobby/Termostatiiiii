@@ -131,7 +131,7 @@ public class DraggableAsset : MonoBehaviour
         return row >= 0 && row < Rows && col >= 0 && col < Cols;
     }
 
-    private void ProcessDropOnCell()
+    private async void ProcessDropOnCell()
     {
         int cellIndex = GridY * Cols + GridX;
 
@@ -158,8 +158,39 @@ public class DraggableAsset : MonoBehaviour
         }
 
         targetCell.UpdateValue(objectType);
+        if (GetObjectType() == 2)
+        {
+
+            //Debug.Log($"Sono un mostro e mi trovo in X = {GridX}; Y = {GridY}");
+            if (await Requester.ObstacleFound(GridX, GridY))
+            {
+                //Debug.Log("Cancello ostacolo precedente");
+                Requester.DeleteObstacle(GridX, GridY);
+            }
+            if (await Requester.MonsterFound(GridX, GridY))
+            {
+                //Debug.Log("Cancello mostro precedente");
+                Requester.DeleteMonster(GridX, GridY);
+            }
+            Requester.AddMonster(AssignedEntity.Name, AssignedEntity.Current_Pf, GridX, GridY);
+        }
+        else if (GetObjectType() == 1)
+        {
+            //Debug.Log($"Sono un ostacolo e mi trovo in X = {GridX}; Y = {GridY}");
+            if (await Requester.ObstacleFound(GridX, GridY))
+            {
+                //Debug.Log("Cancello ostacolo precedente");
+                Requester.DeleteObstacle(GridX, GridY);
+            }
+            if (await Requester.MonsterFound(GridX, GridY))
+            {
+                //Debug.Log("Cancello mostro precedente");
+                Requester.DeleteMonster(GridX, GridY);
+            }
+            Requester.AddObstacle(AssignedEntity.Name, AssignedEntity.Current_Pf, GridX, GridY);
+        }
         //crea instance
-        targetCell.AddAsset(spriteRenderer);
+        targetCell.AddAsset(spriteRenderer, AssignedEntity);
 
         OnSuccessfullyPlaced();
     }

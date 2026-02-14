@@ -32,21 +32,10 @@ public class UserPopup : MonoBehaviour
 
     private List<Entity> allEntities = new List<Entity>();
 
-
-    public async Task SetCurrentPlayerAsync() //questa roba verrà caricata dal bottone della home
-    {
-        currentPlayer = await Requester.RequestRandomCharacter();
-        Debug.Log($"Current player set to: {currentPlayer?.Name}");
-
-        List<CreatureEntity.Action> actions = await Requester.RequestActions(currentPlayer.Name);
-        List<CreatureEntity.Action> spells = await Requester.RequestSpells(currentPlayer.Name);
-        actions.AddRange(spells);
-        currentPlayer.Actions = actions;
-    }
-
     private async void Start()
     {
-        if (currentPlayer == null) { await SetCurrentPlayerAsync(); }
+        currentPlayer = Persist.Characters.FirstOrDefault(p => p.Name == PlayerPrefs.GetString("name"));
+        Debug.Log($"Current player set to: {currentPlayer?.Name}");
 
         if (currentPlayer?.Actions != null)
         {
@@ -93,8 +82,6 @@ public class UserPopup : MonoBehaviour
                 {
                     actionButton.targetGraphic = buttonImage;
                 }
-
-
             }
 
             CreatureEntity.Action currentAction = currentPlayer.Actions[i];

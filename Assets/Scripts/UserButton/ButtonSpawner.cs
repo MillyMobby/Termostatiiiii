@@ -41,13 +41,14 @@ public class ButtonSpawner : MonoBehaviour
             text,
             selectedClass,
             col,
-            () => OnButtonClicked()
+            () => OnButtonClicked(text)
         );
     }
 
 
-    private void OnButtonClicked()
+    private void OnButtonClicked(string name)
     {
+        PlayerPrefs.SetString("name", name);
         return;
     }
 }

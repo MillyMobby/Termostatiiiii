@@ -212,6 +212,22 @@ public class MapManager : MonoBehaviour
         Cell cellA = cells[indexA];
         Cell cellB = cells[indexB];
 
+        if (cellA.CurrentEntity.GetType().Name == "Monster")
+        {
+            Requester.DeleteMonster(cellA.Y, cellA.X);
+            string name = cellA.CurrentEntity.Name;
+            int pf = cellA.CurrentEntity.Current_Pf;
+            Debug.Log(name);
+            Requester.AddMonster(name, pf, cellB.Y, cellB.X);
+        }
+        else if (cellA.CurrentEntity.GetType().Name == "Obstacle")
+        {
+            Requester.DeleteObstacle(cellA.Y, cellA.X);
+            string name = cellA.CurrentEntity.Name;
+            int pf = cellA.CurrentEntity.Current_Pf;
+            Requester.AddObstacle(name, pf, cellB.Y, cellB.X);
+        }
+
         Sprite spriteA = cellA.ContentRenderer.sprite;
         Sprite spriteB = cellB.ContentRenderer.sprite;
 

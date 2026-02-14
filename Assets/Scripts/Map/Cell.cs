@@ -37,6 +37,8 @@ public class Cell : MonoBehaviour
         get => contentRenderer;
         set => contentRenderer = value;
     }
+    private WorldEntity currentEntity;
+    public WorldEntity CurrentEntity => currentEntity;
 
     private bool canAcceptDrop = false;
     public bool CanAcceptDrop => canAcceptDrop;
@@ -124,10 +126,11 @@ public class Cell : MonoBehaviour
     }
 
 
-    public void AddAsset(SpriteRenderer asset) 
+    public void AddAsset(SpriteRenderer asset, WorldEntity entity) 
     {
         if (contentRenderer != null && asset != null)
         {
+            this.currentEntity = entity;
             contentRenderer.enabled = true;
             contentRenderer.sprite = asset.sprite;
             contentRenderer.color = asset.color;

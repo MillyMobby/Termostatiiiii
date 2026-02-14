@@ -185,7 +185,6 @@ MonoBehaviour:
   popupPrefab: {fileID: 7298544377499765174, guid: 02f0476a40173ee49ab46f6f2992c9b4, type: 3}
   canvasTransform: {fileID: 733571693615002911, guid: b01e78f14d2704ff2b31ad5c82c34b27, type: 3}
   spawnOnStart: 0
-  spawnPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &424585553
 GameObject:
   m_ObjectHideFlags: 0
@@ -198,6 +197,7 @@ GameObject:
   - component: {fileID: 424585557}
   - component: {fileID: 424585556}
   - component: {fileID: 424585555}
+  - component: {fileID: 424585558}
   m_Layer: 5
   m_Name: Back Button
   m_TagString: Untagged
@@ -267,7 +267,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 424585556}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 424585558}
+        m_TargetAssemblyTypeName: SceneButtonManager, Assembly-CSharp
+        m_MethodName: LoadScene
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &424585556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -306,6 +318,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 424585553}
   m_CullTransparentMesh: 1
+--- !u!114 &424585558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 424585553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9074a5a3af163415badaa87c5235de01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SceneButtonManager
+  targetScene: {fileID: 102900000, guid: c55c59b3ad287364c927ce7b32886e19, type: 3}
 --- !u!1 &524861865
 GameObject:
   m_ObjectHideFlags: 0
@@ -454,7 +479,6 @@ MonoBehaviour:
   popupPrefab: {fileID: 7281243426440096994, guid: ffdba762eb9c6f241bb27c8ce006e44c, type: 3}
   canvasTransform: {fileID: 524861866}
   spawnOnStart: 0
-  spawnPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &671079260
 GameObject:
   m_ObjectHideFlags: 0
@@ -740,7 +764,6 @@ MonoBehaviour:
   popupPrefab: {fileID: 5772073804537137910, guid: 9f6101f1ba2604a208517c55f33d3890, type: 3}
   canvasTransform: {fileID: 987696213}
   spawnOnStart: 0
-  spawnPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &1320177268
 GameObject:
   m_ObjectHideFlags: 0

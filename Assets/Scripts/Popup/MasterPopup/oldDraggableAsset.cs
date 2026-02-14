@@ -210,7 +210,7 @@ public class OldDraggableAsset : MonoBehaviour
                         int objectType = 3;
                         targetCell.UpdateValue(objectType);
                     }
-                    targetCell.AddAsset(assetSprite);
+                    //targetCell.AddAsset(assetSprite);
                     OnSuccessfullyPlaced();
                 }
                 else

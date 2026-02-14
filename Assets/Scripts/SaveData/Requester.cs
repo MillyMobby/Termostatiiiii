@@ -6,22 +6,9 @@ using Newtonsoft.Json.Linq;
 
 public class Requester
 {
-    public static async Task<Character> RequestRandomCharacter()
+
+    public static async Task<List<Character>> RequestCharacters()
     {
-        // First, get all characters
-        List<Character> allCharacters = await RequestCharacters();
-
-        if (allCharacters == null || allCharacters.Count == 0)
-        {
-            Debug.Log("No characters available");
-            return null;
-        }
-
-        // Return a random character
-        int randomIndex = UnityEngine.Random.Range(0, allCharacters.Count);
-        return allCharacters[randomIndex];
-    }
-    public static async Task<List<Character>> RequestCharacters() {
         List<Character> characters = new List<Character>();
         UnityWebRequest www = UnityWebRequest.Get("https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/characters");
         await www.SendWebRequest();
@@ -37,7 +24,7 @@ public class Requester
             JArray array = JArray.Parse(json);
             foreach (JObject obj in array.Children<JObject>())
             {
-                
+
                 var character = new Character
                 {
                     Name = obj["Name"]?.ToString(),
@@ -45,7 +32,7 @@ public class Requester
                     Bio = obj["Bio"]?.ToString(),
                     AC = obj["AC"].Value<int>(),
                     Initiative = obj["Initiative"].Value<int>(),
-                    Actions = new List<CreatureEntity.Action>(),   
+                    Actions = new List<CreatureEntity.Action>(),
                     Pass_Perc = obj["Pass_Perc"].Value<int>(),
                     Hit_Dice = obj["Hit_Dice"]?.ToString(),
                     Str = obj["Str"].Value<int>(),
@@ -59,13 +46,14 @@ public class Requester
                     Level = obj["Level"].Value<int>(),
                     Race = obj["Race"]?.ToString()
                 };
-                 characters.Add(character);
+                characters.Add(character);
             }
             return characters;
         }
     }
 
-    public static async Task<List<Monster>> RequestMonsters() {
+    public static async Task<List<Monster>> RequestMonsters()
+    {
         List<Monster> listMonsters = new List<Monster>();
         UnityWebRequest www = UnityWebRequest.Get("https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/monsters");
         await www.SendWebRequest();
@@ -93,13 +81,14 @@ public class Requester
                     Type = obj["Type"]?.ToString(),
                     Current_Pf = obj["Max_Pf"].Value<int>()
                 };
-                 listMonsters.Add(monster);
+                listMonsters.Add(monster);
             }
             return listMonsters;
         }
     }
 
-    public static async Task<List<Obstacle>> RequestObstacles() {
+    public static async Task<List<Obstacle>> RequestObstacles()
+    {
         List<Obstacle> listObstacles = new List<Obstacle>();
         UnityWebRequest www = UnityWebRequest.Get("https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/obstacles");
         await www.SendWebRequest();
@@ -122,7 +111,7 @@ public class Requester
                     Bio = obj["Description"]?.ToString(),
                     Current_Pf = obj["Max_PF"].Value<int>()
                 };
-                 listObstacles.Add(obstacle);
+                listObstacles.Add(obstacle);
             }
             return listObstacles;
         }
@@ -216,5 +205,87 @@ public class Requester
             }
             return spells;
         }
+    }
+
+    public static async void AddMonster(string type, int pf, int x, int y)
+    {
+        UnityWebRequest www = UnityWebRequest.PostWwwForm($"https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/monsters?type={type}&pf={pf}&x={x}&y={y}", string.Empty);
+        await www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("Couldn't send POST request: " + www.error);
+        }
+        return;
+    }
+
+    public static async void AddObstacle(string type, int pf, int x, int y)
+    {
+        UnityWebRequest www = UnityWebRequest.PostWwwForm($"https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/obstacles?type={type}&pf={pf}&x={x}&y={y}", string.Empty);
+        await www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("Couldn't send POST request: " + www.error);
+        }
+        return;
+    }
+
+    public static async Task<bool> ObstacleFound(int x, int y)
+    {
+        UnityWebRequest www = UnityWebRequest.Get($"https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/obstacles/instance?x={x}&y={y}");
+        await www.SendWebRequest();
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("Couldn't send GET request: " + www.error);
+            return false;
+        }
+        else
+        {
+            string result = www.downloadHandler.text;
+            Debug.Log($"Ecco cosa ho trovato (Obstacle):{result}");
+            return result != "";
+        }
+    }
+
+    public static async Task<bool> MonsterFound(int x, int y)
+    {
+        UnityWebRequest www = UnityWebRequest.Get($"https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/monsters/instance?x={x}&y={y}");
+        await www.SendWebRequest();
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("Couldn't send GET request: " + www.error);
+            return false;
+        }
+        else
+        {
+            string result = www.downloadHandler.text;
+            Debug.Log($"Ecco cosa ho trovato (Monster): {result}");
+            return result != "";
+        }
+    }
+
+    public static async void DeleteMonster(int x, int y)
+    {
+        UnityWebRequest www = UnityWebRequest.Delete($"https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/monsters/instance?x={x}&y={y}");
+        await www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("Couldn't send DELETE request: " + www.error);
+        }
+        return;
+    }
+
+    public static async void DeleteObstacle(int x, int y)
+    {
+        UnityWebRequest www = UnityWebRequest.Delete($"https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/obstacles/instance?x={x}&y={y}");
+        await www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("Couldn't send DELETE request: " + www.error);
+        }
+        return;
     }
 }
