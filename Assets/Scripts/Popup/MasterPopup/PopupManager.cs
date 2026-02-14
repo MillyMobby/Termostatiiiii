@@ -3,10 +3,15 @@ using UnityEngine;
 public class PopupManager : MonoBehaviour
 {
 
-[SerializeField] private GameObject popupPrefab;
-[SerializeField] private Transform canvasTransform;
+    [SerializeField] private GameObject popupPrefab;
+    [SerializeField] private Transform canvasTransform;
 
-private GameObject activePopup;
+    [Header("Spawn Settings")]
+    [SerializeField] private bool spawnOnStart = false;
+    //[SerializeField] private Vector3 spawnPosition = Vector3.zero;
+
+    private GameObject activePopup;
+    //bool mapMode = false;
 
     public void OpenPopup()
     {
@@ -25,7 +30,21 @@ private GameObject activePopup;
         }
     }
 
+    public GameObject ShowPopup(Character character, Vector3 worldPosition)
+    {
+        if (popupPrefab == null/* || character == null*/)
+            return null;
+        
+        activePopup = Instantiate(popupPrefab, worldPosition, Quaternion.identity);
 
+        UserPagePopup popupComponent = activePopup.GetComponent<UserPagePopup>();
+                if (popupComponent != null )
+                {
+                    popupComponent.Initialize(character); 
+                }
+
+        return activePopup;
+    }
     public void DestroyPopup()
     {
         if (activePopup == null) return;

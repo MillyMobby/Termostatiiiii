@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 232167308}
   - component: {fileID: 232167309}
+  - component: {fileID: 232167310}
   m_Layer: 0
   m_Name: MatrixManager
   m_TagString: Untagged
@@ -168,6 +169,23 @@ MonoBehaviour:
   _gridCanvas: {fileID: 1320177269}
   _cellSize: 100
   draggablePrefab: {fileID: 0}
+  popupManager: {fileID: 232167310}
+--- !u!114 &232167310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 232167306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63b97620186794662ba95e7a994de7ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PopupManager
+  popupPrefab: {fileID: 7298544377499765174, guid: 02f0476a40173ee49ab46f6f2992c9b4, type: 3}
+  canvasTransform: {fileID: 733571693615002911, guid: b01e78f14d2704ff2b31ad5c82c34b27, type: 3}
+  spawnOnStart: 0
+  spawnPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &424585553
 GameObject:
   m_ObjectHideFlags: 0
@@ -435,6 +453,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MasterPopup
   popupPrefab: {fileID: 7281243426440096994, guid: ffdba762eb9c6f241bb27c8ce006e44c, type: 3}
   canvasTransform: {fileID: 524861866}
+  spawnOnStart: 0
+  spawnPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &671079260
 GameObject:
   m_ObjectHideFlags: 0
@@ -574,6 +594,7 @@ GameObject:
   - component: {fileID: 987696210}
   - component: {fileID: 987696215}
   - component: {fileID: 987696214}
+  - component: {fileID: 987696216}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -704,6 +725,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 987696209}
   m_CullTransparentMesh: 1
+--- !u!114 &987696216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 987696209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63b97620186794662ba95e7a994de7ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PopupManager
+  popupPrefab: {fileID: 5772073804537137910, guid: 9f6101f1ba2604a208517c55f33d3890, type: 3}
+  canvasTransform: {fileID: 987696213}
+  spawnOnStart: 0
+  spawnPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &1320177268
 GameObject:
   m_ObjectHideFlags: 0
@@ -737,7 +774,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -85}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1304.2008, y: 702.1004}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &1320177270

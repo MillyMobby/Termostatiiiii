@@ -21,6 +21,8 @@ public class MapManager : MonoBehaviour
     [SerializeField] private GameObject draggablePrefab;
     private List<DraggableAsset> _masterAssets;
     private Dictionary<Character, Vector2Int> players = new Dictionary<Character, Vector2Int>();
+
+    [SerializeField] private PopupManager popupManager;
     public Dictionary<Character, Vector2Int> Players
     {
         get => players;
@@ -47,6 +49,21 @@ public class MapManager : MonoBehaviour
 
             }
         }
+    }
+
+    public Character FindCharacterAtPosition(int x, int y)
+    {
+        Vector2Int targetPosition = new Vector2Int(x, y);
+
+        foreach (var kvp in players)
+        {
+            if (kvp.Value == targetPosition)
+            {
+                return kvp.Key;
+            }
+        }
+
+        return null; // No character found at this position
     }
 
 
@@ -286,7 +303,12 @@ public class MapManager : MonoBehaviour
 
 
             }
-            // ! qui andranno mostrate le info della entity cliccata
+            Vector2 position = GetCellCoordinates(cell, true);
+            Character character = FindCharacterAtPosition(cell.X, cell.Y);
+
+            if (cell.Y > 0) { popupManager.ShowPopup(character, new Vector3(position.x, position.y, 100)); }
+            else { popupManager.ShowPopup(character, new Vector3(position.x, position.y+3, 100)); }
+            
         }
 
     }
@@ -330,4 +352,50 @@ public class MapManager : MonoBehaviour
         }
     }
 
+    public Vector2 GetCellCoordinates(Cell cell, bool worldCoordinates)
+    {
+        if (cell == null)
+        {
+            Debug.LogError("Cell is null!");
+            return Vector2.zero;
+        }
+
+        Camera mainCamera = Camera.main;
+        if (mainCamera == null)
+        {
+            Debug.LogError("Main camera not found!");
+            return Vector2.zero;
+        }
+
+        // Get the RectTransform of the cell
+        RectTransform cellRect = cell.GetComponent<RectTransform>();
+        if (cellRect != null)
+        {
+            // For WorldSpace canvas, we need to convert from world to screen
+            Vector3 worldPos = cellRect.position;
+            Vector2 screenPos = mainCamera.WorldToScreenPoint(worldPos);
+
+            // DEBUG: Log all the conversion steps
+            Debug.Log($"=== POSITION DEBUG ===");
+            Debug.Log($"Cell: {cell.name}, Grid Position: ({cell.X}, {cell.Y})");
+            Debug.Log($"Cell World Position: {worldPos}");
+            Debug.Log($"Main Camera: {mainCamera.name}, Position: {mainCamera.transform.position}");
+            Debug.Log($"Main Camera Orthographic: {mainCamera.orthographic}, Size: {mainCamera.orthographicSize}");
+            Debug.Log($"Screen Position: {screenPos}");
+            Debug.Log($"Screen Dimensions: {Screen.width}x{Screen.height}");
+
+            // Check if screen position is within bounds
+            bool isOnScreen = screenPos.x >= 0 && screenPos.x <= Screen.width &&
+                             screenPos.y >= 0 && screenPos.y <= Screen.height;
+            Debug.Log($"Is on screen: {isOnScreen}");
+            if (worldCoordinates) { return worldPos; }
+
+            return screenPos;
+        }
+        
+        // Fallback if no RectTransform
+        Vector2 fallbackPos = mainCamera.WorldToScreenPoint(cell.transform.position);
+        Debug.Log($"Using fallback position (no RectTransform): {fallbackPos}");
+        return fallbackPos;
+    }
 }
