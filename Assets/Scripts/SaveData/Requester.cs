@@ -251,7 +251,6 @@ public class Requester
         else
         {
             string result = www.downloadHandler.text;
-            Debug.Log($"Ecco cosa ho trovato (Obstacle):{result}");
             return result != "";
         }
     }
@@ -268,7 +267,6 @@ public class Requester
         else
         {
             string result = www.downloadHandler.text;
-            Debug.Log($"Ecco cosa ho trovato (Monster): {result}");
             return result != "";
         }
     }

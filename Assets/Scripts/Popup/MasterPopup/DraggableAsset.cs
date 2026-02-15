@@ -152,7 +152,6 @@ public class DraggableAsset : MonoBehaviour
         }
 
         int objectType = GetObjectType();
-        Debug.Log($"Object type: {objectType}");
         
         if (objectType == 0)
         {
@@ -173,34 +172,27 @@ public class DraggableAsset : MonoBehaviour
     private async void updateDB() {
         if (GetObjectType() == 2)
         {
-
-            Debug.Log($"Sono un mostro e mi trovo in X = {GridX}; Y = {GridY}");
-            if (await Requester.ObstacleFound(GridX, GridY))
+            if (await Requester.ObstacleFound(GridY, GridX))
             {
-                Debug.Log("Cancello ostacolo precedente");
-                Requester.DeleteObstacle(GridX, GridY);
+                Requester.DeleteObstacle(GridY, GridX);
             }
-            if (await Requester.MonsterFound(GridX, GridY))
+            if (await Requester.MonsterFound(GridY, GridX))
             {
-                Debug.Log("Cancello mostro precedente");
-                Requester.DeleteMonster(GridX, GridY);
+                Requester.DeleteMonster(GridY, GridX);
             }
-            Requester.AddMonster(AssignedEntity.Name, AssignedEntity.Current_Pf, GridX, GridY);
+            Requester.AddMonster(AssignedEntity.Name, AssignedEntity.Current_Pf, GridY, GridX);
         }
         else if (GetObjectType() == 1)
         {
-            Debug.Log($"Sono un ostacolo e mi trovo in X = {GridX}; Y = {GridY}");
-            if (await Requester.ObstacleFound(GridX, GridY))
+            if (await Requester.ObstacleFound(GridY, GridX))
             {
-                Debug.Log("Cancello ostacolo precedente");
-                Requester.DeleteObstacle(GridX, GridY);
+                Requester.DeleteObstacle(GridY, GridX);
             }
-            if (await Requester.MonsterFound(GridX, GridY))
+            if (await Requester.MonsterFound(GridY, GridX))
             {
-                Debug.Log("Cancello mostro precedente");
-                Requester.DeleteMonster(GridX, GridY);
+                Requester.DeleteMonster(GridY, GridX);
             }
-            Requester.AddObstacle(AssignedEntity.Name, AssignedEntity.Current_Pf, GridX, GridY);
+            Requester.AddObstacle(AssignedEntity.Name, AssignedEntity.Current_Pf, GridY, GridX);
         }
     }
     
@@ -238,7 +230,7 @@ public class DraggableAsset : MonoBehaviour
 
     private void OnSuccessfullyPlaced()
     {
-        //Debug.Log($"Placed at ({GridX}, {GridY})");
+        Debug.Log($"Placed at ({GridX}, {GridY})");
         ResetDraggable();
     }
 

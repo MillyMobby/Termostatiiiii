@@ -185,7 +185,7 @@ public class MapManager : MonoBehaviour
             {
                 changedIndices.Add(i);
                 values.Add(inputMatrix[i]);
-                Debug.Log($"Something has changed at index {i}, old value {inputMatrix[i]} - new value {newMatrix[i]}");
+                //Debug.Log($"Something has changed at index {i}, old value {inputMatrix[i]} - new value {newMatrix[i]}");
             }
         }
 
@@ -220,27 +220,41 @@ public class MapManager : MonoBehaviour
             {
                 _masterAssets[i].GridX = cellB.X;
                 _masterAssets[i].GridY = cellB.Y;
+                if (_masterAssets[i].AssignedEntity is Monster)
+                {
+                    Requester.DeleteMonster(cellA.Y, cellA.X);
+                    string name = _masterAssets[i].AssignedEntity.Name;
+                    int pf = _masterAssets[i].AssignedEntity.Current_Pf;
+                    Requester.AddMonster(name, pf, cellB.Y, cellB.X);
+                }
+                else if (_masterAssets[i].AssignedEntity is Obstacle)
+                {
+                    Requester.DeleteObstacle(cellA.Y, cellA.X);
+                    string name = _masterAssets[i].AssignedEntity.Name;
+                    int pf = _masterAssets[i].AssignedEntity.Current_Pf;
+                    Requester.AddObstacle(name, pf, cellB.Y, cellB.X);
+                }
             }
             else if (_masterAssets[i].GridX == cellB.X && _masterAssets[i].GridY == cellB.Y)
             {
                 _masterAssets[i].GridX = cellA.X;
                 _masterAssets[i].GridY = cellA.Y;
+                if (_masterAssets[i].AssignedEntity is Monster)
+                {
+                    Requester.DeleteMonster(cellA.Y, cellA.X);
+                    string name = _masterAssets[i].AssignedEntity.Name;
+                    int pf = _masterAssets[i].AssignedEntity.Current_Pf;
+                    Requester.AddMonster(name, pf, cellB.Y, cellB.X);
+                }
+                else if (_masterAssets[i].AssignedEntity is Obstacle)
+                {
+                    Requester.DeleteObstacle(cellA.Y, cellA.X);
+                    string name = _masterAssets[i].AssignedEntity.Name;
+                    int pf = _masterAssets[i].AssignedEntity.Current_Pf;
+                    Requester.AddObstacle(name, pf, cellB.Y, cellB.X);
+                }
             }
-            if (_masterAssets[i].AssignedEntity is Monster)
-            {
-                Requester.DeleteMonster(cellA.Y, cellA.X);
-                string name = _masterAssets[i].AssignedEntity.Name;
-                int pf = _masterAssets[i].AssignedEntity.Current_Pf;
-                Debug.Log(name);
-                Requester.AddMonster(name, pf, cellB.Y, cellB.X);
-            }
-            else if (_masterAssets[i].AssignedEntity is Obstacle)
-            {
-                Requester.DeleteObstacle(cellA.Y, cellA.X);
-                string name = _masterAssets[i].AssignedEntity.Name;
-                int pf = _masterAssets[i].AssignedEntity.Current_Pf;
-                Requester.AddObstacle(name, pf, cellB.Y, cellB.X);
-            }
+            
         }
         
 
