@@ -7,6 +7,14 @@ using Newtonsoft.Json.Linq;
 public class Requester
 {
 
+    public struct Instance
+    {
+        public string type;
+        public int curr_pf;
+        public int x;
+        public int y;
+    }
+
     public static async Task<List<Character>> RequestCharacters()
     {
         List<Character> characters = new List<Character>();
@@ -293,5 +301,65 @@ public class Requester
             Debug.Log("Couldn't send DELETE request: " + www.error);
         }
         return;
+    }
+
+    public static async List<Instance> GetMonsterInstances()
+    {
+        List<Instance> listMonsters = new List<Instance>();
+        UnityWebRequest www = UnityWebRequest.Get("https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/monsters");
+        await www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("Couldn't send GET request: " + www.error);
+            return listMonsters;
+        }
+        else
+        {
+            var json = www.downloadHandler.text;
+            JArray array = JArray.Parse(json);
+            foreach (JObject obj in array.Children<JObject>())
+            {
+                var monster = new Instance
+                {
+                    type = obj["Type"]?.ToString(),
+                    curr_pf = obj["Curr_Pf"].Value<int>(),
+                    x = obj["X"].Value<int>(),
+                    y = obj["Y"].Value<int>(),
+                };
+                listMonsters.Add(monster);
+            }
+            return listMonsters;
+        }
+    }
+
+    public static async List<Instance> GetObstacleInstances()
+    {
+        List < Instance > listObstacles = new List<Instance>();
+        UnityWebRequest www = UnityWebRequest.Get("https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/monsters");
+        await www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("Couldn't send GET request: " + www.error);
+            return listObstacles;
+        }
+        else
+        {
+            var json = www.downloadHandler.text;
+            JArray array = JArray.Parse(json);
+            foreach (JObject obj in array.Children<JObject>())
+            {
+                var obstacle = new Instance
+                {
+                    type = obj["Type"]?.ToString(),
+                    curr_pf = obj["Curr_Pf"].Value<int>(),
+                    x = obj["X"].Value<int>(),
+                    y = obj["Y"].Value<int>(),
+                };
+                listObstacles.Add(obstacle);
+            }
+            return listObstacles;
+        }
     }
 }
