@@ -306,7 +306,7 @@ public class Requester
     public static async List<Instance> GetMonsterInstances()
     {
         List<Instance> listMonsters = new List<Instance>();
-        UnityWebRequest www = UnityWebRequest.Get("https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/monsters");
+        UnityWebRequest www = UnityWebRequest.Get("https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/monsters/instances");
         await www.SendWebRequest();
 
         if (www.result != UnityWebRequest.Result.Success)
@@ -336,7 +336,7 @@ public class Requester
     public static async List<Instance> GetObstacleInstances()
     {
         List < Instance > listObstacles = new List<Instance>();
-        UnityWebRequest www = UnityWebRequest.Get("https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/monsters");
+        UnityWebRequest www = UnityWebRequest.Get("https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/obstacles/instances");
         await www.SendWebRequest();
 
         if (www.result != UnityWebRequest.Result.Success)
