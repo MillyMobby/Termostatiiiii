@@ -11,7 +11,7 @@ public class PopupManager : MonoBehaviour
     //[SerializeField] private Vector3 spawnPosition = Vector3.zero;
 
     private GameObject activePopup;
-    //bool mapMode = false;
+    [SerializeField] private bool useScreenSpace = false;
 
     public void OpenPopup()
     {
@@ -34,14 +34,56 @@ public class PopupManager : MonoBehaviour
     {
         if (popupPrefab == null/* || character == null*/)
             return null;
-        
+
         activePopup = Instantiate(popupPrefab, worldPosition, Quaternion.identity);
 
         UserPagePopup popupComponent = activePopup.GetComponent<UserPagePopup>();
-                if (popupComponent != null )
-                {
-                    popupComponent.Initialize(character); 
-                }
+        if (popupComponent != null)
+        {
+            popupComponent.Initialize(character);
+        }
+
+        return activePopup;
+    }
+
+    public GameObject ShowPopup(Monster monster, Vector3 worldPosition)
+    {
+        return ShowPopupInternal(monster, worldPosition);
+    }
+
+    public GameObject ShowPopup(Obstacle obstacle, Vector3 worldPosition)
+    {
+        return ShowPopupInternal(obstacle, worldPosition);
+    }
+
+    // Show popup for any WorldEntity at world position
+    public GameObject ShowPopup(WorldEntity entity, Vector3 worldPosition)
+    {
+        return ShowPopupInternal(entity, worldPosition);
+    }
+
+    private GameObject ShowPopupInternal(WorldEntity entity, Vector3 position, bool isScreenPosition = false)
+    {
+        if (popupPrefab == null || entity == null)
+            return null;
+
+        // Destroy any existing popup before creating a new one
+        if (activePopup != null)
+        {
+            Destroy(activePopup);
+        }
+
+
+        // Instantiate in world space
+        activePopup = Instantiate(popupPrefab, position, Quaternion.identity);
+
+
+        // Initialize the popup with the entity
+        EntityPagePopup popupComponent = activePopup.GetComponent<EntityPagePopup>();
+        if (popupComponent != null)
+        {
+            popupComponent.Initialize(entity);
+        }
 
         return activePopup;
     }

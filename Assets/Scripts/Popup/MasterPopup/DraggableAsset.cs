@@ -25,8 +25,8 @@ public class DraggableAsset : MonoBehaviour
 
     public bool Dropped { get; private set; }
 
-    public int GridX { get; private set; } = -1;
-    public int GridY { get; private set; } = -1;
+    public int GridX { get; set; } = -1;
+    public int GridY { get; set; } = -1;
 
     #endregion
 
@@ -46,6 +46,7 @@ public class DraggableAsset : MonoBehaviour
         UpdateColor();
     }
 
+    
     #endregion
 
     #region Drag Logic
@@ -122,8 +123,9 @@ public class DraggableAsset : MonoBehaviour
             0f
         );
 
-        Dropped = true;
+        
         ProcessDropOnCell();
+        Dropped = true;
     }
 
     private bool IsInsideGrid(int row, int col)
@@ -131,7 +133,7 @@ public class DraggableAsset : MonoBehaviour
         return row >= 0 && row < Rows && col >= 0 && col < Cols;
     }
 
-    private async void ProcessDropOnCell()
+    private void ProcessDropOnCell()
     {
         int cellIndex = GridY * Cols + GridX;
 
@@ -151,6 +153,7 @@ public class DraggableAsset : MonoBehaviour
 
         int objectType = GetObjectType();
         Debug.Log($"Object type: {objectType}");
+        
         if (objectType == 0)
         {
             ResetDraggable();
@@ -158,43 +161,49 @@ public class DraggableAsset : MonoBehaviour
         }
 
         targetCell.UpdateValue(objectType);
+        GridX = targetCell.X;
+        GridY = targetCell.Y;
+        
+        targetCell.AddAsset(spriteRenderer);
+
+        OnSuccessfullyPlaced();
+        updateDB();
+    }
+
+    private async void updateDB() {
         if (GetObjectType() == 2)
         {
 
-            //Debug.Log($"Sono un mostro e mi trovo in X = {GridX}; Y = {GridY}");
+            Debug.Log($"Sono un mostro e mi trovo in X = {GridX}; Y = {GridY}");
             if (await Requester.ObstacleFound(GridX, GridY))
             {
-                //Debug.Log("Cancello ostacolo precedente");
+                Debug.Log("Cancello ostacolo precedente");
                 Requester.DeleteObstacle(GridX, GridY);
             }
             if (await Requester.MonsterFound(GridX, GridY))
             {
-                //Debug.Log("Cancello mostro precedente");
+                Debug.Log("Cancello mostro precedente");
                 Requester.DeleteMonster(GridX, GridY);
             }
             Requester.AddMonster(AssignedEntity.Name, AssignedEntity.Current_Pf, GridX, GridY);
         }
         else if (GetObjectType() == 1)
         {
-            //Debug.Log($"Sono un ostacolo e mi trovo in X = {GridX}; Y = {GridY}");
+            Debug.Log($"Sono un ostacolo e mi trovo in X = {GridX}; Y = {GridY}");
             if (await Requester.ObstacleFound(GridX, GridY))
             {
-                //Debug.Log("Cancello ostacolo precedente");
+                Debug.Log("Cancello ostacolo precedente");
                 Requester.DeleteObstacle(GridX, GridY);
             }
             if (await Requester.MonsterFound(GridX, GridY))
             {
-                //Debug.Log("Cancello mostro precedente");
+                Debug.Log("Cancello mostro precedente");
                 Requester.DeleteMonster(GridX, GridY);
             }
             Requester.AddObstacle(AssignedEntity.Name, AssignedEntity.Current_Pf, GridX, GridY);
         }
-        //crea instance
-        targetCell.AddAsset(spriteRenderer, AssignedEntity);
-
-        OnSuccessfullyPlaced();
     }
-
+    
     #endregion
 
     #region Helpers
@@ -212,7 +221,7 @@ public class DraggableAsset : MonoBehaviour
         if (spriteRenderer == null)
             return;
 
-        if (AssignedEntity is Monster m) 
+        if (AssignedEntity is Monster m)
             spriteRenderer.color = Color.red;
         else if (AssignedEntity is Character c)
             spriteRenderer.color = Color.green;

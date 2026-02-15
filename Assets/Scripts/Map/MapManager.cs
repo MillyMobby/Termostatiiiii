@@ -199,59 +199,69 @@ public class MapManager : MonoBehaviour
 
         if (changedIndices.Count == 2)
         {
-            SwapCells(changedIndices[0], changedIndices[1], values[0], values[1]);
+            swap(changedIndices[0], changedIndices[1], values[0], values[1]);
         }
 
         inputMatrix = (int[])newMatrix.Clone();
     }
 
-    private void SwapCells(int indexA, int indexB, int objectTypeA, int objectTypeB)
+    
+
+    private void swap(int indexA, int indexB, int objectTypeA, int objectTypeB)
     {
         if (indexA >= cells.Count || indexB >= cells.Count) return;
 
         Cell cellA = cells[indexA];
         Cell cellB = cells[indexB];
 
-        if (cellA.CurrentEntity.GetType().Name == "Monster")
+        for (int i = 0; i < _masterAssets.Count; i++)
         {
-            Requester.DeleteMonster(cellA.Y, cellA.X);
-            string name = cellA.CurrentEntity.Name;
-            int pf = cellA.CurrentEntity.Current_Pf;
-            Debug.Log(name);
-            Requester.AddMonster(name, pf, cellB.Y, cellB.X);
+            if (_masterAssets[i].GridX == cellA.X && _masterAssets[i].GridY == cellA.Y)
+            {
+                _masterAssets[i].GridX = cellB.X;
+                _masterAssets[i].GridY = cellB.Y;
+            }
+            else if (_masterAssets[i].GridX == cellB.X && _masterAssets[i].GridY == cellB.Y)
+            {
+                _masterAssets[i].GridX = cellA.X;
+                _masterAssets[i].GridY = cellA.Y;
+            }
+            if (_masterAssets[i].AssignedEntity is Monster)
+            {
+                Requester.DeleteMonster(cellA.Y, cellA.X);
+                string name = _masterAssets[i].AssignedEntity.Name;
+                int pf = _masterAssets[i].AssignedEntity.Current_Pf;
+                Debug.Log(name);
+                Requester.AddMonster(name, pf, cellB.Y, cellB.X);
+            }
+            else if (_masterAssets[i].AssignedEntity is Obstacle)
+            {
+                Requester.DeleteObstacle(cellA.Y, cellA.X);
+                string name = _masterAssets[i].AssignedEntity.Name;
+                int pf = _masterAssets[i].AssignedEntity.Current_Pf;
+                Requester.AddObstacle(name, pf, cellB.Y, cellB.X);
+            }
         }
-        else if (cellA.CurrentEntity.GetType().Name == "Obstacle")
-        {
-            Requester.DeleteObstacle(cellA.Y, cellA.X);
-            string name = cellA.CurrentEntity.Name;
-            int pf = cellA.CurrentEntity.Current_Pf;
-            Requester.AddObstacle(name, pf, cellB.Y, cellB.X);
-        }
-
-        Sprite spriteA = cellA.ContentRenderer.sprite;
-        Sprite spriteB = cellB.ContentRenderer.sprite;
+        
 
         Sprite tempSprite = cellA.CellBackground.sprite;
         cellA.CellBackground.sprite = cellB.CellBackground.sprite;
         cellB.CellBackground.sprite = tempSprite;
-
-        Vector3 tempPos = cellA.transform.localPosition;
-        cellA.transform.localPosition = cellB.transform.localPosition;
-        cellB.transform.localPosition = tempPos;
 
         int tempX = cellA.X;
         int tempY = cellA.Y;
 
         cellA.UpdateCoordinates(cellB.X, cellB.Y);
         cellB.UpdateCoordinates(tempX, tempY);
-
-        cellA.Init(cellB.X, cellB.Y, objectTypeA, generateBackground: false, sprite: spriteA); 
-        cellB.Init(tempX, tempY, objectTypeB, generateBackground: false, sprite: spriteB);
-    
+        Vector3 tempPos = cellA.transform.localPosition;
+        cellA.transform.localPosition = cellB.transform.localPosition;
+        cellB.transform.localPosition = tempPos;
         cells[indexA] = cellB;
         cells[indexB] = cellA;
-    }
 
+
+
+    }
 
     public void AddDraggableAsset(DraggableAsset asset)
     {
@@ -307,24 +317,34 @@ public class MapManager : MonoBehaviour
         if (cell.IsButton)
         {
             Debug.Log($"Button cell touched! Coordinates: ({x}, {y})");
-
+            //FOR MASTER
             for (int i = 0; i < _masterAssets.Count; i++)
             {
                 if (_masterAssets[i].GridX == cell.X && _masterAssets[i].GridY == cell.Y)
                 {
-                    Debug.Log($"PF = {_masterAssets[i].AssignedEntity.Max_Pf}, AC = {_masterAssets[i].AssignedEntity.Bio}");
+                    Vector2 position = GetCellCoordinates(cell, true);
+                    if (cell.Y > 0)
+                    {
+                        popupManager.ShowPopup(_masterAssets[i].AssignedEntity, new Vector3(position.x, position.y, 100));
+                    }
+                    else { popupManager.ShowPopup(_masterAssets[i].AssignedEntity, new Vector3(position.x, position.y+2, 100)); }
+                    //if (_masterAssets[i].AssignedEntity is Obstacle) { Debug.Log("OBSTACLE ASSET"); }
+                    //    Debug.Log($"PF = {_masterAssets[i].AssignedEntity.Max_Pf}, AC = {_masterAssets[i].AssignedEntity.Bio}");
+
                     return;
 
                 }
-
+            }
+            //FOR PLAYERS
+            Character character = FindCharacterAtPosition(cell.X, cell.Y);
+            if (character != null)
+            {
+                Vector2 position = GetCellCoordinates(cell, true);
+                if (cell.Y > 0) { popupManager.ShowPopup(character, new Vector3(position.x, position.y, 100)); }
+                else { popupManager.ShowPopup(character, new Vector3(position.x, position.y + 2, 100)); }
 
             }
-            Vector2 position = GetCellCoordinates(cell, true);
-            Character character = FindCharacterAtPosition(cell.X, cell.Y);
 
-            if (cell.Y > 0) { popupManager.ShowPopup(character, new Vector3(position.x, position.y, 100)); }
-            else { popupManager.ShowPopup(character, new Vector3(position.x, position.y+3, 100)); }
-            
         }
 
     }

@@ -6,7 +6,7 @@ using System.Collections;
 public class Cell : MonoBehaviour
 {
     //[SerializeField] private GameObject manager;
-  
+
     [Header("Position of the cell")]
     [SerializeField] private int x;
     public int X => x;
@@ -37,8 +37,6 @@ public class Cell : MonoBehaviour
         get => contentRenderer;
         set => contentRenderer = value;
     }
-    private WorldEntity currentEntity;
-    public WorldEntity CurrentEntity => currentEntity;
 
     private bool canAcceptDrop = false;
     public bool CanAcceptDrop => canAcceptDrop;
@@ -81,7 +79,8 @@ public class Cell : MonoBehaviour
                 contentRenderer.enabled = false;
                 contentRenderer.sprite = null;
                 isButton = false;
-            } 
+                canAcceptDrop = false;
+            }
             else
             {
                 contentRenderer.enabled = true;
@@ -92,7 +91,7 @@ public class Cell : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"ContentRenderer is null on {gameObject.name}. Drag the child SpriteRenderer into this slot in the Inspector!");           
+            Debug.LogError($"ContentRenderer is null on {gameObject.name}. Drag the child SpriteRenderer into this slot in the Inspector!");
         }
     }
 
@@ -110,8 +109,8 @@ public class Cell : MonoBehaviour
         {
             isButton = true;
             canAcceptDrop = true;
-            
-            if (contentRenderer != null) 
+
+            if (contentRenderer != null)
             {
                 contentRenderer.enabled = true;
                 if (sprite != null) contentRenderer.sprite = sprite;
@@ -126,17 +125,16 @@ public class Cell : MonoBehaviour
     }
 
 
-    public void AddAsset(SpriteRenderer asset, WorldEntity entity) 
+    public void AddAsset(SpriteRenderer asset)
     {
-        if (contentRenderer != null && asset != null)
+        if (contentRenderer != null && isButton && canAcceptDrop && asset != null)
         {
-            this.currentEntity = entity;
             contentRenderer.enabled = true;
             contentRenderer.sprite = asset.sprite;
             contentRenderer.color = asset.color;
-            isButton = true;
+            //isButton = true;
             canAcceptDrop = false;
-        }  
+        }
     }
 
 

@@ -224,7 +224,7 @@ public class MasterPopup : MonoBehaviour
 
             // Add to manager
             MapManager.Instance.AddDraggableAsset(draggable);
-
+            
             //Debug.Log($"Created draggable for {e.Name} and started dragging");
         }
         else

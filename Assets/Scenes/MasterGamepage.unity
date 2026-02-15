@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 232167308}
   - component: {fileID: 232167309}
+  - component: {fileID: 232167310}
   m_Layer: 0
   m_Name: Map Manager
   m_TagString: Untagged
@@ -168,6 +169,23 @@ MonoBehaviour:
   _gridCanvas: {fileID: 1320177269}
   _cellSize: 100
   draggablePrefab: {fileID: 8999777510355309203, guid: e5c76c90352896b499d09b63fab8130d, type: 3}
+  popupManager: {fileID: 232167310}
+--- !u!114 &232167310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 232167306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63b97620186794662ba95e7a994de7ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PopupManager
+  popupPrefab: {fileID: 5830399137937986235, guid: 70bd84374d66fba48acb4aa5c707e540, type: 3}
+  canvasTransform: {fileID: 1320177269}
+  spawnOnStart: 0
+  useScreenSpace: 0
 --- !u!1 &424585553
 GameObject:
   m_ObjectHideFlags: 0
@@ -461,6 +479,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MasterPopup
   popupPrefab: {fileID: 2386428719707464112, guid: 5560df50136ff4c7590fd25cf8f4b75d, type: 3}
   canvasTransform: {fileID: 524861866}
+  spawnOnStart: 0
+  useScreenSpace: 0
 --- !u!1 &671079260
 GameObject:
   m_ObjectHideFlags: 0
