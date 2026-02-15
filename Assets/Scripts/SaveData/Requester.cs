@@ -303,7 +303,7 @@ public class Requester
         return;
     }
 
-    public static async List<Instance> GetMonsterInstances()
+    public static async Task<List<Instance>> GetMonsterInstances()
     {
         List<Instance> listMonsters = new List<Instance>();
         UnityWebRequest www = UnityWebRequest.Get("https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/monsters/instances");
@@ -333,7 +333,7 @@ public class Requester
         }
     }
 
-    public static async List<Instance> GetObstacleInstances()
+    public static async Task<List<Instance>> GetObstacleInstances()
     {
         List < Instance > listObstacles = new List<Instance>();
         UnityWebRequest www = UnityWebRequest.Get("https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/obstacles/instances");

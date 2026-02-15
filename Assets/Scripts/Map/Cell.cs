@@ -39,7 +39,11 @@ public class Cell : MonoBehaviour
     }
 
     private bool canAcceptDrop = false;
-    public bool CanAcceptDrop => canAcceptDrop;
+    public bool CanAcceptDrop
+    {
+        get => canAcceptDrop;
+        set => canAcceptDrop = value;
+    }
     private int objectType;
     public int ObjectType => objectType;
     private bool isButton = false;

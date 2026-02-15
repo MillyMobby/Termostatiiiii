@@ -15,9 +15,9 @@ public class UserPagePopup : MonoBehaviour
     [SerializeField] private TextMeshProUGUI extraStatsText;
 
     [Header("Display Settings")]
-    [SerializeField] private float displayDuration = 2f; 
-    [SerializeField] private bool fadeOut = true; 
-    [SerializeField] private float fadeDuration = 0.5f; 
+    [SerializeField] private float displayDuration = 2f;
+    [SerializeField] private bool fadeOut = true;
+    [SerializeField] private float fadeDuration = 0.5f;
 
     private Character currentCharacter;
     private CanvasGroup canvasGroup;
@@ -31,7 +31,7 @@ public class UserPagePopup : MonoBehaviour
         }
     }
 
-    
+
     public void Initialize(Character character)
     {
         currentCharacter = character;

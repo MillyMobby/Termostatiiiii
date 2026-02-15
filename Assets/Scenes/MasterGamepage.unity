@@ -164,6 +164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b4314b224dde4b619591b27fe59065a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NewManager
+  _masterMode: 1
   _matrixReceiver: {fileID: 938095196}
   _tilePrefab: {fileID: 4250931230596665827, guid: b01e78f14d2704ff2b31ad5c82c34b27, type: 3}
   _gridCanvas: {fileID: 1320177269}

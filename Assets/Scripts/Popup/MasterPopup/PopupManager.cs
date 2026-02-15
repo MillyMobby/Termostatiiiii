@@ -32,18 +32,19 @@ public class PopupManager : MonoBehaviour
 
     public GameObject ShowPopup(Character character, Vector3 worldPosition)
     {
-        if (popupPrefab == null/* || character == null*/)
-            return null;
+        //if (popupPrefab == null/* || character == null*/)
+        //    return null;
 
-        activePopup = Instantiate(popupPrefab, worldPosition, Quaternion.identity);
+        //activePopup = Instantiate(popupPrefab, worldPosition, Quaternion.identity);
 
-        UserPagePopup popupComponent = activePopup.GetComponent<UserPagePopup>();
-        if (popupComponent != null)
-        {
-            popupComponent.Initialize(character);
-        }
+        //UserPagePopup popupComponent = activePopup.GetComponent<UserPagePopup>();
+        //if (popupComponent != null)
+        //{
+        //    popupComponent.Initialize(character);
+        //}
 
-        return activePopup;
+        //return activePopup;
+        return ShowPopupInternal(character, worldPosition);
     }
 
     public GameObject ShowPopup(Monster monster, Vector3 worldPosition)

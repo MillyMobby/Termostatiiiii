@@ -164,6 +164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b4314b224dde4b619591b27fe59065a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NewManager
+  _masterMode: 0
   _matrixReceiver: {fileID: 938095196}
   _tilePrefab: {fileID: 4250931230596665827, guid: b01e78f14d2704ff2b31ad5c82c34b27, type: 3}
   _gridCanvas: {fileID: 1320177269}
@@ -182,9 +183,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63b97620186794662ba95e7a994de7ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PopupManager
-  popupPrefab: {fileID: 7298544377499765174, guid: 02f0476a40173ee49ab46f6f2992c9b4, type: 3}
+  popupPrefab: {fileID: 5830399137937986235, guid: 70bd84374d66fba48acb4aa5c707e540, type: 3}
   canvasTransform: {fileID: 733571693615002911, guid: b01e78f14d2704ff2b31ad5c82c34b27, type: 3}
   spawnOnStart: 0
+  useScreenSpace: 0
 --- !u!1 &424585553
 GameObject:
   m_ObjectHideFlags: 0
@@ -479,6 +481,7 @@ MonoBehaviour:
   popupPrefab: {fileID: 7281243426440096994, guid: ffdba762eb9c6f241bb27c8ce006e44c, type: 3}
   canvasTransform: {fileID: 524861866}
   spawnOnStart: 0
+  useScreenSpace: 0
 --- !u!1 &671079260
 GameObject:
   m_ObjectHideFlags: 0
@@ -764,6 +767,7 @@ MonoBehaviour:
   popupPrefab: {fileID: 5772073804537137910, guid: 9f6101f1ba2604a208517c55f33d3890, type: 3}
   canvasTransform: {fileID: 987696213}
   spawnOnStart: 0
+  useScreenSpace: 0
 --- !u!1 &1320177268
 GameObject:
   m_ObjectHideFlags: 0

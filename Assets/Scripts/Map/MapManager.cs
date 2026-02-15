@@ -7,6 +7,7 @@ public class MapManager : MonoBehaviour
 
     // * Singleton
     public static MapManager Instance { get; private set; }
+    [SerializeField] private bool _masterMode;
 
     [Header("Map Settings")]
     [SerializeField] private MatrixReceiver _matrixReceiver;
@@ -17,24 +18,90 @@ public class MapManager : MonoBehaviour
     [SerializeField] private float _cellSize = 100f;
     public float CellSize => _cellSize;
 
-    [Header("Draggable settings")]
+    [Header("Entity settings")]
     [SerializeField] private GameObject draggablePrefab;
-    private List<DraggableAsset> _masterAssets;
+    private List<GridAsset> _masterAssets;
+    private List<GridAsset> _provamasterAssets = new List<GridAsset>();
     private Dictionary<Character, Vector2Int> players = new Dictionary<Character, Vector2Int>();
+    public Dictionary<Character, Vector2Int> Players
+        {
+            get => players;
+            set => players = value;
+        }
 
     [SerializeField] private PopupManager popupManager;
-    public Dictionary<Character, Vector2Int> Players
-    {
-        get => players;
-        set => players = value;
-    }
-
+    
 
     [Header("Data")]
     private int _rows, _cols;
     private int[] inputMatrix;
     private List<Cell> cells = new List<Cell> { };
     public List<Cell> Cells => cells;
+
+    public async void AssignAllMonstersAndObstacles()
+    {
+        if (_masterMode != true)
+        {
+            List<Requester.Instance> monsterInstances = await Requester.GetMonsterInstances();
+            foreach (Requester.Instance monsterInstance in monsterInstances)
+            {
+                foreach (Monster m in Persist.Monsters)
+                {
+                    if (m.Name == monsterInstance.type)
+                    {
+                        
+                        // GridAsset asset = GridAssetFactory.CreateGridAsset(
+                        //     gridAssetPrefab.GetComponent<GridAsset>(), 
+                        //     m, 
+                        //     monsterInstance.x, 
+                        //     monsterInstance.y, 
+                        //     monsterInstance.curr_pf,
+                        //     this.transform
+                        // );
+                        Debug.Log($"mostro istanza {monsterInstance.type},{monsterInstance.x}, {monsterInstance.y},{monsterInstance.curr_pf}");
+                        
+                        GridAsset asset = GridAssetFactory.CreateGridAsset<GridAsset>(
+                            m,
+                            monsterInstance.x,
+                            monsterInstance.y,
+                            monsterInstance.curr_pf
+                        );
+
+                        _provamasterAssets.Add(asset);
+                    }
+                }
+            }
+            Debug.Log($"Monsters added = {_provamasterAssets.Count}");
+        }
+    }
+    public void AssignAllCharacters()
+    {
+        List<Character> characters = Persist.Characters;
+
+        for (int i = 0; i < inputMatrix.Length; i++)
+        {
+            if (inputMatrix[i] != 0 && cells[i].IsButton && inputMatrix[i]!=1) //non assegno il player rosso così posso ancora testare il drag and drop
+            {
+                foreach (Character c in characters)
+                {
+                    if (c.Color == inputMatrix[i])
+                    {
+                        int row = i / _cols;
+                        int col = i % _cols;
+
+                        players[c] = new Vector2Int(col, row);
+                        Debug.Log($" ASSIGNED {c.Name} in cell ({row},{col})");
+                        cells[i].CanAcceptDrop = false;
+                    }
+                    else
+                    {
+                        Debug.Log($" No match for {c.Name}");
+                    }
+                }
+            }
+        }
+        Debug.Log($"Final players assigned: {players.Count}");
+    }
 
     public void AssignCharacterInGrid(int color, Character player)
     {
@@ -46,7 +113,6 @@ public class MapManager : MonoBehaviour
                 int col = i % _cols;
 
                 players[player] = new Vector2Int(col, row);
-
             }
         }
     }
@@ -62,7 +128,6 @@ public class MapManager : MonoBehaviour
                 return kvp.Key;
             }
         }
-
         return null; // No character found at this position
     }
 
@@ -81,12 +146,12 @@ public class MapManager : MonoBehaviour
 
     void Start()
     {
-        if (_matrixReceiver != null) 
+        if (_matrixReceiver != null)
             _matrixReceiver.OnMatrixReady += HandleNewMapData;
-        else 
+        else
             Debug.Log("Matrix Receiver has not been assigned in the inspector.");
-        
-        _masterAssets = new List<DraggableAsset>();
+
+        _masterAssets = new List<GridAsset>();
         DraggableAsset.Rows = _rows;
         DraggableAsset.Cols = _cols;
     }
@@ -100,7 +165,7 @@ public class MapManager : MonoBehaviour
 
     void OnDestroy()
     {
-        if (_matrixReceiver != null) 
+        if (_matrixReceiver != null)
             _matrixReceiver.OnMatrixReady -= HandleNewMapData;
     }
 
@@ -118,8 +183,14 @@ public class MapManager : MonoBehaviour
 
             ClearGrid();
             DrawGrid();
-        } 
+            UpdateGrid(newMatrix);
+            AssignAllCharacters();
+            AssignAllMonstersAndObstacles();
+            return;
+
+        }
         UpdateGrid(newMatrix);
+
     }
 
 
@@ -127,7 +198,7 @@ public class MapManager : MonoBehaviour
     {
         if (cells == null) return;
 
-        foreach(var cell in cells)
+        foreach (var cell in cells)
             if (cell != null) Destroy(cell.gameObject);
 
         cells.Clear();
@@ -159,14 +230,14 @@ public class MapManager : MonoBehaviour
 
                 float posX = startX + (col * _cellSize);
                 float posY = startY + (row * _cellSize);
-                
+
                 var spawnedTile = Instantiate(_tilePrefab);
                 spawnedTile.transform.SetParent(_gridCanvas, false);
-                
+
                 // Using localPosition because it's relative to the _gridCanvas center
                 spawnedTile.transform.localPosition = new Vector3(posX, posY, 0);
                 spawnedTile.transform.localScale = targetScale;
-                
+
                 spawnedTile.name = $"Tile ({row}x{col})";
                 spawnedTile.Init(row, col, inputMatrix[index]);
                 cells.Add(spawnedTile);
@@ -181,7 +252,7 @@ public class MapManager : MonoBehaviour
 
         for (int i = 0; i < inputMatrix.Length; i++)
         {
-            if (inputMatrix[i] != newMatrix[i]) 
+            if (inputMatrix[i] != newMatrix[i])
             {
                 changedIndices.Add(i);
                 values.Add(inputMatrix[i]);
@@ -199,20 +270,34 @@ public class MapManager : MonoBehaviour
 
         if (changedIndices.Count == 2)
         {
-            swap(changedIndices[0], changedIndices[1], values[0], values[1]);
+            swap(changedIndices[0], changedIndices[1]/*, values[0], values[1]*/);
         }
 
         inputMatrix = (int[])newMatrix.Clone();
     }
 
-    
 
-    private void swap(int indexA, int indexB, int objectTypeA, int objectTypeB)
+
+    private void swap(int indexA, int indexB/*, int objectTypeA, int objectTypeB*/)
     {
         if (indexA >= cells.Count || indexB >= cells.Count) return;
 
         Cell cellA = cells[indexA];
         Cell cellB = cells[indexB];
+        int rowA = indexA / _cols;
+        int colA = indexA % _cols;
+        int rowB = indexB / _cols;
+        int colB = indexB % _cols;
+
+        Character movingPlayer = FindCharacterAtPosition(colA, rowA);
+        if (movingPlayer != null)
+        {
+            Vector2Int pos = players[movingPlayer];
+            pos.x = colB;
+            pos.y = rowB;
+            players[movingPlayer] = pos;
+        }
+
 
         for (int i = 0; i < _masterAssets.Count; i++)
         {
@@ -220,33 +305,35 @@ public class MapManager : MonoBehaviour
             {
                 _masterAssets[i].GridX = cellB.X;
                 _masterAssets[i].GridY = cellB.Y;
-                if (_masterAssets[i].AssignedEntity is Monster)
+                if (_masterAssets[i].AssignedEntity is Monster && _masterMode)
                 {
                     Requester.DeleteMonster(cellA.Y, cellA.X);
                     string name = _masterAssets[i].AssignedEntity.Name;
                     int pf = _masterAssets[i].AssignedEntity.Current_Pf;
                     Requester.AddMonster(name, pf, cellB.Y, cellB.X);
+                    Debug.Log("aggiornamento riuscito");
                 }
-                else if (_masterAssets[i].AssignedEntity is Obstacle)
+                else if (_masterAssets[i].AssignedEntity is Obstacle && _masterMode)
                 {
                     Requester.DeleteObstacle(cellA.Y, cellA.X);
                     string name = _masterAssets[i].AssignedEntity.Name;
                     int pf = _masterAssets[i].AssignedEntity.Current_Pf;
                     Requester.AddObstacle(name, pf, cellB.Y, cellB.X);
+                    Debug.Log("aggiornamento riuscito");
                 }
             }
             else if (_masterAssets[i].GridX == cellB.X && _masterAssets[i].GridY == cellB.Y)
             {
                 _masterAssets[i].GridX = cellA.X;
                 _masterAssets[i].GridY = cellA.Y;
-                if (_masterAssets[i].AssignedEntity is Monster)
+                if (_masterAssets[i].AssignedEntity is Monster && _masterMode)
                 {
                     Requester.DeleteMonster(cellA.Y, cellA.X);
                     string name = _masterAssets[i].AssignedEntity.Name;
                     int pf = _masterAssets[i].AssignedEntity.Current_Pf;
                     Requester.AddMonster(name, pf, cellB.Y, cellB.X);
                 }
-                else if (_masterAssets[i].AssignedEntity is Obstacle)
+                else if (_masterAssets[i].AssignedEntity is Obstacle && _masterMode)
                 {
                     Requester.DeleteObstacle(cellA.Y, cellA.X);
                     string name = _masterAssets[i].AssignedEntity.Name;
@@ -254,9 +341,7 @@ public class MapManager : MonoBehaviour
                     Requester.AddObstacle(name, pf, cellB.Y, cellB.X);
                 }
             }
-            
         }
-        
 
         Sprite tempSprite = cellA.CellBackground.sprite;
         cellA.CellBackground.sprite = cellB.CellBackground.sprite;
@@ -273,18 +358,15 @@ public class MapManager : MonoBehaviour
         cells[indexA] = cellB;
         cells[indexB] = cellA;
 
-
-
     }
 
-    public void AddDraggableAsset(DraggableAsset asset)
+    public void AddDraggableAsset(/*DraggableAsset*/GridAsset asset)
     {
-        if(_masterAssets == null)
-            _masterAssets = new List<DraggableAsset>();
+        if (_masterAssets == null)
+            _masterAssets = new List<GridAsset>();
 
         _masterAssets.Add(asset);
     }
-
 
     void HandleTouchInputRaycast()
     {
@@ -341,27 +423,24 @@ public class MapManager : MonoBehaviour
                     {
                         popupManager.ShowPopup(_masterAssets[i].AssignedEntity, new Vector3(position.x, position.y, 100));
                     }
-                    else { popupManager.ShowPopup(_masterAssets[i].AssignedEntity, new Vector3(position.x, position.y+2, 100)); }
-                    //if (_masterAssets[i].AssignedEntity is Obstacle) { Debug.Log("OBSTACLE ASSET"); }
-                    //    Debug.Log($"PF = {_masterAssets[i].AssignedEntity.Max_Pf}, AC = {_masterAssets[i].AssignedEntity.Bio}");
+                    else { popupManager.ShowPopup(_masterAssets[i].AssignedEntity, new Vector3(position.x, position.y + 2, 100)); }
 
                     return;
-
                 }
             }
             //FOR PLAYERS
             Character character = FindCharacterAtPosition(cell.X, cell.Y);
-            if (character != null)
+            Character character2 = FindCharacterAtPosition(cell.Y, cell.X);
+            Debug.Log($"cliccato {character2.Name}");
+            if (character2 != null)
             {
                 Vector2 position = GetCellCoordinates(cell, true);
-                if (cell.Y > 0) { popupManager.ShowPopup(character, new Vector3(position.x, position.y, 100)); }
-                else { popupManager.ShowPopup(character, new Vector3(position.x, position.y + 2, 100)); }
-
+                if (cell.Y > 0) { popupManager.ShowPopup(character2, new Vector3(position.x, position.y, 100)); }
+                else { popupManager.ShowPopup(character2, new Vector3(position.x, position.y + 2, 100)); }
             }
-
         }
-
     }
+
     public void HighlightArea(int color, int range)
     {
         for (int i = 0; i < inputMatrix.Length; i++)
@@ -426,13 +505,13 @@ public class MapManager : MonoBehaviour
             Vector2 screenPos = mainCamera.WorldToScreenPoint(worldPos);
 
             // DEBUG: Log all the conversion steps
-            Debug.Log($"=== POSITION DEBUG ===");
-            Debug.Log($"Cell: {cell.name}, Grid Position: ({cell.X}, {cell.Y})");
-            Debug.Log($"Cell World Position: {worldPos}");
-            Debug.Log($"Main Camera: {mainCamera.name}, Position: {mainCamera.transform.position}");
-            Debug.Log($"Main Camera Orthographic: {mainCamera.orthographic}, Size: {mainCamera.orthographicSize}");
-            Debug.Log($"Screen Position: {screenPos}");
-            Debug.Log($"Screen Dimensions: {Screen.width}x{Screen.height}");
+            //Debug.Log($"=== POSITION DEBUG ===");
+            //Debug.Log($"Cell: {cell.name}, Grid Position: ({cell.X}, {cell.Y})");
+            //Debug.Log($"Cell World Position: {worldPos}");
+            //Debug.Log($"Main Camera: {mainCamera.name}, Position: {mainCamera.transform.position}");
+            //Debug.Log($"Main Camera Orthographic: {mainCamera.orthographic}, Size: {mainCamera.orthographicSize}");
+            //Debug.Log($"Screen Position: {screenPos}");
+            //Debug.Log($"Screen Dimensions: {Screen.width}x{Screen.height}");
 
             // Check if screen position is within bounds
             bool isOnScreen = screenPos.x >= 0 && screenPos.x <= Screen.width &&
@@ -442,7 +521,7 @@ public class MapManager : MonoBehaviour
 
             return screenPos;
         }
-        
+
         // Fallback if no RectTransform
         Vector2 fallbackPos = mainCamera.WorldToScreenPoint(cell.transform.position);
         Debug.Log($"Using fallback position (no RectTransform): {fallbackPos}");

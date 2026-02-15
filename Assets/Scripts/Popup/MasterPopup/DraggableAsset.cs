@@ -1,52 +1,24 @@
 using UnityEngine;
 
-public class DraggableAsset : MonoBehaviour
+public class DraggableAsset : GridAsset
 {
     #region Fields
 
-    [Header("Assigned Entities")]
-
-    private WorldEntity assignedEntity;
-    public WorldEntity AssignedEntity
-    {
-        get => assignedEntity;
-        set
-        {
-            assignedEntity = value;
-            UpdateColor();
-        }
-    }
-
-    private SpriteRenderer spriteRenderer;
     private Camera mainCamera;
-
     private Vector3 dragOffset;
     private bool isDragging;
-
     public bool Dropped { get; private set; }
-
-    public int GridX { get; set; } = -1;
-    public int GridY { get; set; } = -1;
-
-    #endregion
-
-    #region Grid Settings
-
-    public static int Rows { get; set; }
-    public static int Cols { get; set; }
 
     #endregion
 
     #region Unity Lifecycle
 
-    private void Awake()
+    protected override void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        base.Awake();
         mainCamera = Camera.main;
-        UpdateColor();
     }
 
-    
     #endregion
 
     #region Drag Logic
@@ -94,7 +66,7 @@ public class DraggableAsset : MonoBehaviour
             mainCamera,
             out Vector2 localPoint))
         {
-            ResetDraggable();
+            ResetAsset();
             return;
         }
 
@@ -109,7 +81,7 @@ public class DraggableAsset : MonoBehaviour
 
         if (!IsInsideGrid(row, col))
         {
-            ResetDraggable();
+            ResetAsset();
             return;
         }
 
@@ -123,120 +95,19 @@ public class DraggableAsset : MonoBehaviour
             0f
         );
 
-        
         ProcessDropOnCell();
         Dropped = true;
     }
 
-    private bool IsInsideGrid(int row, int col)
-    {
-        return row >= 0 && row < Rows && col >= 0 && col < Cols;
-    }
-
-    private void ProcessDropOnCell()
-    {
-        int cellIndex = GridY * Cols + GridX;
-
-        if (cellIndex < 0 || cellIndex >= MapManager.Instance.Cells.Count)
-        {
-            ResetDraggable();
-            return;
-        }
-
-        Cell targetCell = MapManager.Instance.Cells[cellIndex];
-
-        if (targetCell == null || !targetCell.CanAcceptDrop)
-        {
-            ResetDraggable();
-            return;
-        }
-
-        int objectType = GetObjectType();
-        
-        if (objectType == 0)
-        {
-            ResetDraggable();
-            return;
-        }
-
-        targetCell.UpdateValue(objectType);
-        GridX = targetCell.X;
-        GridY = targetCell.Y;
-        
-        targetCell.AddAsset(spriteRenderer);
-
-        OnSuccessfullyPlaced();
-        updateDB();
-    }
-
-    private async void updateDB() {
-        if (GetObjectType() == 2)
-        {
-            if (await Requester.ObstacleFound(GridY, GridX))
-            {
-                Requester.DeleteObstacle(GridY, GridX);
-            }
-            if (await Requester.MonsterFound(GridY, GridX))
-            {
-                Requester.DeleteMonster(GridY, GridX);
-            }
-            Requester.AddMonster(AssignedEntity.Name, AssignedEntity.Current_Pf, GridY, GridX);
-        }
-        else if (GetObjectType() == 1)
-        {
-            if (await Requester.ObstacleFound(GridY, GridX))
-            {
-                Requester.DeleteObstacle(GridY, GridX);
-            }
-            if (await Requester.MonsterFound(GridY, GridX))
-            {
-                Requester.DeleteMonster(GridY, GridX);
-            }
-            Requester.AddObstacle(AssignedEntity.Name, AssignedEntity.Current_Pf, GridY, GridX);
-        }
-    }
-    
     #endregion
 
     #region Helpers
-
-    private int GetObjectType()
-    {
-        if (AssignedEntity is Monster m) return 2;
-        if (AssignedEntity is Character c) return 3;
-        if (AssignedEntity is Obstacle o) return 1;
-        return 0;
-    }
-
-    private void UpdateColor()
-    {
-        if (spriteRenderer == null)
-            return;
-
-        if (AssignedEntity is Monster m)
-            spriteRenderer.color = Color.red;
-        else if (AssignedEntity is Character c)
-            spriteRenderer.color = Color.green;
-        else
-            spriteRenderer.color = Color.white;
-    }
 
     private Vector3 GetMouseWorldPosition()
     {
         Vector3 pos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         pos.z = -8f;
         return pos;
-    }
-
-    private void OnSuccessfullyPlaced()
-    {
-        Debug.Log($"Placed at ({GridX}, {GridY})");
-        ResetDraggable();
-    }
-
-    private void ResetDraggable()
-    {
-        Destroy(gameObject);
     }
 
     #endregion

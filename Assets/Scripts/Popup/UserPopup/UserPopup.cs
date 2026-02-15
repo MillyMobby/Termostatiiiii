@@ -1,13 +1,13 @@
-using System.Collections;
+//using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using TMPro;
+//using System.Threading.Tasks;
+//using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.TextCore.Text;
+//using UnityEngine.EventSystems;
+//using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
-using static UnityEngine.EventSystems.EventTrigger;
+//using static UnityEngine.EventSystems.EventTrigger;
 
 public class UserPopup : MonoBehaviour
 {
@@ -35,6 +35,7 @@ public class UserPopup : MonoBehaviour
     private async void Start()
     {
         currentPlayer = Persist.Characters.FirstOrDefault(p => p.Name == PlayerPrefs.GetString("name"));
+        color = currentPlayer.Color;
         Debug.Log($"Current player set to: {currentPlayer?.Name}");
 
         if (currentPlayer?.Actions != null)
@@ -47,12 +48,12 @@ public class UserPopup : MonoBehaviour
         }
 
         GenerateList();
-        MapManager.Instance.AssignCharacterInGrid(color, currentPlayer);
+        //MapManager.Instance.AssignCharacterInGrid(color, currentPlayer);
     }
 
     public void GenerateList()
     {
-        
+
         if (currentPlayer == null || currentPlayer.Actions == null)
         {
             Debug.LogError("Can't generate list - no player or actions");
