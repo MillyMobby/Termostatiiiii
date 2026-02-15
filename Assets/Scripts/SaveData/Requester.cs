@@ -44,7 +44,15 @@ public class Requester
                     Current_Pf = obj["Max_Pf"].Value<int>(),
                     Class = obj["Class"]?.ToString(),
                     Level = obj["Level"].Value<int>(),
-                    Race = obj["Race"]?.ToString()
+                    Race = obj["Race"]?.ToString(),
+                    Color = 0
+                };
+                character.Color = character.Name switch
+                {
+                    "Karina" => 2,
+                    "Kabo" => 1,
+                    "Cheese" => 3,
+                    _ => 0
                 };
                 characters.Add(character);
             }

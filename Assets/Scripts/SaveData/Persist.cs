@@ -5,7 +5,7 @@ using UnityEngine;
 public class Persist : MonoBehaviour
 {
 
-    private static List<Character> characters;
+    private static List<Character> characters = new List<Character>();
     public static List<Character> Characters => characters;
     private static List<Monster> monsters;
     public static List<Monster> Monsters => monsters;
@@ -26,26 +26,29 @@ public class Persist : MonoBehaviour
     {
         DontDestroyOnLoad(gameObject);
 
-        characters = await Requester.RequestCharacters();
-        IsLoaded = true;
-        OnDataLoaded?.Invoke();
-        monsters = await Requester.RequestMonsters();
-        obstacles = await Requester.RequestObstacles();
-        
-        foreach (var character in characters)
+        if (characters.Count == 0)
         {
-            List<CreatureEntity.Action> actions = await Requester.RequestActions(character.Name);
-            List<CreatureEntity.Action> spells = await Requester.RequestSpells(character.Name);
-            actions.AddRange(spells);
-            character.Actions = actions;
-         }
+            characters = await Requester.RequestCharacters();
+            IsLoaded = true;
+            OnDataLoaded?.Invoke();
+            monsters = await Requester.RequestMonsters();
+            obstacles = await Requester.RequestObstacles();
 
-        foreach (var monster in monsters)
-        {
-            List<CreatureEntity.Action> actions = await Requester.RequestMonsterActions(monster.Name);
-            monster.Actions = actions;
+            foreach (var character in characters)
+            {
+                List<CreatureEntity.Action> actions = await Requester.RequestActions(character.Name);
+                List<CreatureEntity.Action> spells = await Requester.RequestSpells(character.Name);
+                actions.AddRange(spells);
+                character.Actions = actions;
+            }
+
+            foreach (var monster in monsters)
+            {
+                List<CreatureEntity.Action> actions = await Requester.RequestMonsterActions(monster.Name);
+                monster.Actions = actions;
+            }
+            Debug.Log("Finito di caricare");
         }
-        Debug.Log("Finito di caricare");
     }
 
 
