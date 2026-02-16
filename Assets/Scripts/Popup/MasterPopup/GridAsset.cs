@@ -92,7 +92,7 @@ public class GridAsset : MonoBehaviour
 
     protected async void UpdateDatabase()
     {
-        if (GetObjectType() == 2)
+        if (GetObjectType() == 1)
         {
             if (await Requester.ObstacleFound(GridY, GridX))
             {
@@ -126,7 +126,7 @@ public class GridAsset : MonoBehaviour
 
     protected int GetObjectType()
     {
-        if (AssignedEntity is Monster) return 2;
+        if (AssignedEntity is Monster) return 1;
         if (AssignedEntity is Character) return 3;
         if (AssignedEntity is Obstacle) return 2;
         return 0;
