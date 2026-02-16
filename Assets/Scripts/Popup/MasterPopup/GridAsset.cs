@@ -49,7 +49,7 @@ public class GridAsset : MonoBehaviour
         return row >= 0 && row < Rows && col >= 0 && col < Cols;
     }
 
-    protected void ProcessDropOnCell()
+    public void ProcessDropOnCell(bool masterMode)
     {
         int cellIndex = GridY * Cols + GridX;
 
@@ -82,7 +82,7 @@ public class GridAsset : MonoBehaviour
         targetCell.AddAsset(spriteRenderer);
 
         OnSuccessfullyPlaced();
-        UpdateDatabase();
+        if (masterMode) { UpdateDatabase(); }
         ResetAsset();
     }
 
@@ -105,7 +105,7 @@ public class GridAsset : MonoBehaviour
             Requester.AddMonster(AssignedEntity.Name, AssignedEntity.Current_Pf, GridY, GridX);
             Debug.Log("aggiornamento riuscito");
         }
-        else if (GetObjectType() == 1)
+        else if (GetObjectType() == 2)
         {
             if (await Requester.ObstacleFound(GridY, GridX))
             {
@@ -128,7 +128,7 @@ public class GridAsset : MonoBehaviour
     {
         if (AssignedEntity is Monster) return 2;
         if (AssignedEntity is Character) return 3;
-        if (AssignedEntity is Obstacle) return 1;
+        if (AssignedEntity is Obstacle) return 2;
         return 0;
     }
 
@@ -162,23 +162,43 @@ public class GridAsset : MonoBehaviour
         GridY = gridY;
         currPF = pf;
 
-        if (spriteRenderer != null && entity != null)
+        
+        if (spriteRenderer == null)
         {
-            // If the entity has a sprite
-            if (!string.IsNullOrEmpty("Sprites/Icons/enemyIcon"))
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            if (spriteRenderer == null)
             {
-                Sprite entitySprite = Resources.Load<Sprite>("Sprites/Icons/enemyIcon");
-                if (entitySprite != null)
-                    spriteRenderer.sprite = entitySprite;
+                spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
+            }
+        }
+
+        if (entity != null)
+        {
+            // Try to get sprite from the entity first (if it has one)
+            Sprite entitySprite = null;
+
+            if (entity is Monster)
+                entitySprite = Resources.Load<Sprite>("Sprites/Icons/enemyIcon");
+            else if (entity is Character)
+                entitySprite = Resources.Load<Sprite>("Sprites/Icons/characterIcon");
+            else if (entity is Obstacle)
+                entitySprite = Resources.Load<Sprite>("Sprites/Icons/obstacleIcon");
+
+            //// Fallback to enemyIcon if nothing else worked
+            if (entitySprite == null)
+            {
+                entitySprite = Resources.Load<Sprite>("Sprites/Icons/obstacleIcon");
+            }
+
+            //// Assign the sprite
+            if (entitySprite != null)
+            {
+                spriteRenderer.sprite = entitySprite;
             }
 
             UpdateColor();
         }
-
     }
-
-    
-
     #endregion
 }
 
@@ -194,7 +214,7 @@ public static class GridAssetFactory
 
         T asset = GameObject.Instantiate(prefab, parent);
 
-        asset.Initialize(entity, pf, gridX, gridY);
+        asset.Initialize(entity, gridX, gridY, pf);
 
         return asset;
     }
@@ -204,7 +224,7 @@ public static class GridAssetFactory
     {
         GameObject go = new GameObject($"{entity.Name}_GridAsset");
         T asset = go.AddComponent<T>();
-        asset.Initialize(entity, pf, gridX, gridY);
+        asset.Initialize(entity, gridX, gridY, pf);
         return asset;
     }
 }

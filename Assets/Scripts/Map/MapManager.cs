@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class MapManager : MonoBehaviour
 {
-
     // * Singleton
     public static MapManager Instance { get; private set; }
     [SerializeField] private bool _masterMode;
+    public bool MasterMode => _masterMode;
 
     [Header("Map Settings")]
     [SerializeField] private MatrixReceiver _matrixReceiver;
@@ -38,18 +39,27 @@ public class MapManager : MonoBehaviour
     private List<Cell> cells = new List<Cell> { };
     public List<Cell> Cells => cells;
 
-    public async void AssignAllMonstersAndObstacles()
-    {
-        if (_masterMode != true)
+    public void processInstances(List<Requester.Instance> instances, int type) {
+        foreach (Requester.Instance instance in instances)
         {
-            List<Requester.Instance> monsterInstances = await Requester.GetMonsterInstances();
-            foreach (Requester.Instance monsterInstance in monsterInstances)
+            if (_masterMode)
             {
-                foreach (Monster m in Persist.Monsters)
+                if (type==0) { Requester.DeleteMonster(instance.x, instance.y); }
+                else if (type ==1) { Requester.DeleteObstacle(instance.x, instance.y); }
+                Debug.Log($"cancello istanza {instance.type},{instance.x}, {instance.y},{instance.curr_pf}");             
+            }
+            else
+            {
+                IEnumerable<WorldEntity> targetList = type switch
                 {
-                    if (m.Name == monsterInstance.type)
+                    0 => Persist.Monsters,
+                    1 => Persist.Obstacles,
+                    _ => Enumerable.Empty<WorldEntity>() // default empty list
+                };
+                foreach (WorldEntity m in targetList)
+                {
+                    if (m.Name == instance.type)
                     {
-                        
                         // GridAsset asset = GridAssetFactory.CreateGridAsset(
                         //     gridAssetPrefab.GetComponent<GridAsset>(), 
                         //     m, 
@@ -58,21 +68,38 @@ public class MapManager : MonoBehaviour
                         //     monsterInstance.curr_pf,
                         //     this.transform
                         // );
-                        Debug.Log($"mostro istanza {monsterInstance.type},{monsterInstance.x}, {monsterInstance.y},{monsterInstance.curr_pf}");
-                        
+                        Debug.Log($" istanza {instance.type},{instance.x}, {instance.y},{instance.curr_pf}");
+
                         GridAsset asset = GridAssetFactory.CreateGridAsset<GridAsset>(
                             m,
-                            monsterInstance.x,
-                            monsterInstance.y,
-                            monsterInstance.curr_pf
+                            instance.x,
+                            instance.y,
+                            instance.curr_pf
                         );
+                        AddDraggableAsset(asset);
 
-                        _provamasterAssets.Add(asset);
+                        asset.ProcessDropOnCell(_masterMode);
                     }
                 }
             }
-            Debug.Log($"Monsters added = {_provamasterAssets.Count}");
         }
+        Debug.Log($" instances = {_masterAssets.Count}");
+    }
+    public async void UpdateMonstersAndObstaclesInstances()
+    {
+        List<Requester.Instance> monsterInstances = await Requester.GetMonsterInstances();
+        foreach (var obs in monsterInstances)
+        {
+            Debug.Log($"Obstacle instance: type={obs.type}, x={obs.x}, y={obs.y}, pf={obs.curr_pf}");
+        }
+        processInstances(monsterInstances, 0);
+        List<Requester.Instance> obstacleInstances = await Requester.GetObstacleInstances();
+
+        foreach (var obs in obstacleInstances)
+        {
+            Debug.Log($"Obstacle instance: type={obs.type}, x={obs.x}, y={obs.y}, pf={obs.curr_pf}");
+        }
+        processInstances(obstacleInstances, 1);        
     }
     public void AssignAllCharacters()
     {
@@ -185,7 +212,7 @@ public class MapManager : MonoBehaviour
             DrawGrid();
             UpdateGrid(newMatrix);
             AssignAllCharacters();
-            AssignAllMonstersAndObstacles();
+            UpdateMonstersAndObstaclesInstances();
             return;
 
         }
@@ -360,7 +387,7 @@ public class MapManager : MonoBehaviour
 
     }
 
-    public void AddDraggableAsset(/*DraggableAsset*/GridAsset asset)
+    public void AddDraggableAsset(GridAsset asset)
     {
         if (_masterAssets == null)
             _masterAssets = new List<GridAsset>();
@@ -415,9 +442,11 @@ public class MapManager : MonoBehaviour
             Debug.Log($"Button cell touched! Coordinates: ({x}, {y})");
             //FOR MASTER
             for (int i = 0; i < _masterAssets.Count; i++)
-            {
+            {   
+                Debug.Log($"popup mostro {_masterAssets[i].GridX} , {_masterAssets[i].GridY}");
                 if (_masterAssets[i].GridX == cell.X && _masterAssets[i].GridY == cell.Y)
                 {
+                    
                     Vector2 position = GetCellCoordinates(cell, true);
                     if (cell.Y > 0)
                     {
@@ -429,14 +458,12 @@ public class MapManager : MonoBehaviour
                 }
             }
             //FOR PLAYERS
-            Character character = FindCharacterAtPosition(cell.X, cell.Y);
-            Character character2 = FindCharacterAtPosition(cell.Y, cell.X);
-            Debug.Log($"cliccato {character2.Name}");
-            if (character2 != null)
+            Character character = FindCharacterAtPosition(cell.Y, cell.X);
+            if (character != null)
             {
                 Vector2 position = GetCellCoordinates(cell, true);
-                if (cell.Y > 0) { popupManager.ShowPopup(character2, new Vector3(position.x, position.y, 100)); }
-                else { popupManager.ShowPopup(character2, new Vector3(position.x, position.y + 2, 100)); }
+                if (cell.Y > 0) { popupManager.ShowPopup(character, new Vector3(position.x, position.y, 100)); }
+                else { popupManager.ShowPopup(character, new Vector3(position.x, position.y + 2, 100)); }
             }
         }
     }
@@ -499,21 +526,10 @@ public class MapManager : MonoBehaviour
         // Get the RectTransform of the cell
         RectTransform cellRect = cell.GetComponent<RectTransform>();
         if (cellRect != null)
-        {
-            // For WorldSpace canvas, we need to convert from world to screen
+        {           
             Vector3 worldPos = cellRect.position;
             Vector2 screenPos = mainCamera.WorldToScreenPoint(worldPos);
 
-            // DEBUG: Log all the conversion steps
-            //Debug.Log($"=== POSITION DEBUG ===");
-            //Debug.Log($"Cell: {cell.name}, Grid Position: ({cell.X}, {cell.Y})");
-            //Debug.Log($"Cell World Position: {worldPos}");
-            //Debug.Log($"Main Camera: {mainCamera.name}, Position: {mainCamera.transform.position}");
-            //Debug.Log($"Main Camera Orthographic: {mainCamera.orthographic}, Size: {mainCamera.orthographicSize}");
-            //Debug.Log($"Screen Position: {screenPos}");
-            //Debug.Log($"Screen Dimensions: {Screen.width}x{Screen.height}");
-
-            // Check if screen position is within bounds
             bool isOnScreen = screenPos.x >= 0 && screenPos.x <= Screen.width &&
                              screenPos.y >= 0 && screenPos.y <= Screen.height;
             Debug.Log($"Is on screen: {isOnScreen}");

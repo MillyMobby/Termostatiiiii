@@ -95,7 +95,7 @@ public class DraggableAsset : GridAsset
             0f
         );
 
-        ProcessDropOnCell();
+        ProcessDropOnCell(MapManager.Instance.MasterMode);
         Dropped = true;
     }
 
