@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+    using System.Threading.Tasks;
+using UnityEngine.Networking;
 
 public class MapManager : MonoBehaviour
 {
@@ -83,7 +85,7 @@ public class MapManager : MonoBehaviour
                 }
             }
         }
-        Debug.Log($" instances = {_masterAssets.Count}");
+        //Debug.Log($" instances = {_masterAssets.Count}");
     }
     public async void UpdateMonstersAndObstaclesInstances()
     {
@@ -107,7 +109,7 @@ public class MapManager : MonoBehaviour
 
         for (int i = 0; i < inputMatrix.Length; i++)
         {
-            if (inputMatrix[i] != 0 && cells[i].IsButton && inputMatrix[i]!=1) //non assegno il player rosso cos� posso ancora testare il drag and drop
+            if (inputMatrix[i] != 0 && cells[i].IsButton && inputMatrix[i]!=1) //non assegno il player rosso così posso ancora testare il drag and drop
             {
                 foreach (Character c in characters)
                 {
@@ -117,17 +119,17 @@ public class MapManager : MonoBehaviour
                         int col = i % _cols;
 
                         players[c] = new Vector2Int(col, row);
-                        Debug.Log($" ASSIGNED {c.Name} in cell ({row},{col})");
+                        //Debug.Log($" ASSIGNED {c.Name} in cell ({row},{col})");
                         cells[i].CanAcceptDrop = false;
                     }
                     else
                     {
-                        Debug.Log($" No match for {c.Name}");
+                        //Debug.Log($" No match for {c.Name}");
                     }
                 }
             }
         }
-        Debug.Log($"Final players assigned: {players.Count}");
+        //Debug.Log($"Final players assigned: {players.Count}");
     }
 
     public void AssignCharacterInGrid(int color, Character player)
@@ -197,7 +199,6 @@ public class MapManager : MonoBehaviour
     }
 
 
-    /* well
     void HandleNewMapData(int[] newMatrix, int newRows, int newCols)
     {
         if (newRows != _rows || newCols != _cols)
@@ -209,8 +210,6 @@ public class MapManager : MonoBehaviour
             DraggableAsset.Cols = _cols;
             inputMatrix = new int[_rows * _cols];
 
-            PrintMap();
-
             ClearGrid();
             DrawGrid();
             UpdateGrid(newMatrix);
@@ -221,33 +220,7 @@ public class MapManager : MonoBehaviour
         }
         UpdateGrid(newMatrix);
 
-    }
-    */
 
-    void HandleNewMapData(int[] newMatrix, int newRows, int newCols)
-    {
-        if (newRows != _rows || newCols != _cols)
-        {
-            _rows = newRows;
-            _cols = newCols;
-
-            DraggableAsset.Rows = _rows;
-            DraggableAsset.Cols = _cols;
-            
-            // FIX 1: Clone the actual new data BEFORE drawing the grid
-            inputMatrix = (int[])newMatrix.Clone();
-
-            PrintMap(); // This will now accurately print the '3'
-
-            ClearGrid();
-            DrawGrid(); // Draws using the populated inputMatrix
-            
-            // Removed UpdateGrid(newMatrix) here because DrawGrid already handled it
-            AssignAllCharacters();
-            UpdateMonstersAndObstaclesInstances();
-            return;
-        }
-        UpdateGrid(newMatrix);
     }
 
 
@@ -296,14 +269,11 @@ public class MapManager : MonoBehaviour
                 spawnedTile.transform.localScale = targetScale;
 
                 spawnedTile.name = $"Tile ({row}x{col})";
-
                 spawnedTile.Init(row, col, inputMatrix[index]);
                 cells.Add(spawnedTile);
             }
         }
     }
-
-    /* well
     public void UpdateGrid(int[] newMatrix)
     {
         List<int> changedIndices = new List<int>();
@@ -328,58 +298,47 @@ public class MapManager : MonoBehaviour
             return;
         }
 
+
+
         if (changedIndices.Count == 2)
         {
-            swap(changedIndices[0], changedIndices[1]);
+            swap(changedIndices[0], changedIndices[1]/*, values[0], values[1]*/);
         }
 
         inputMatrix = (int[])newMatrix.Clone();
-    }
-    */
 
-    public void UpdateGrid(int[] newMatrix)
-    {
-        List<int> changedIndices = new List<int>();
-
-        for (int i = 0; i < inputMatrix.Length; i++)
+        if (changedIndices.Count ==1)
         {
-            if (inputMatrix[i] != newMatrix[i])
+            int color = newMatrix[changedIndices[0]];
+
+            if (color == 0)
             {
-                changedIndices.Add(i);
+                int row = changedIndices[0] / _cols;
+                int col = changedIndices[0] % _cols;
+                Character c = FindCharacterAtPosition(col, row);
+                if (c!=null)
+                {
+                    players.Remove(c);
+                }
+                cells[changedIndices[0]].SetEmpty();
+            }
+            else {
+                List<Character> characters = Persist.Characters;
+                foreach (Character c in characters)
+                {
+                    if (c.Color == color)
+                    {
+                        AssignCharacterInGrid(color, c);
+                    }
+                }
+                cells[changedIndices[0]].UpdateValue(color);
             }
         }
-
-        if (changedIndices.Count == 0) return; // Optional: early exit if nothing changed
-
-        if (changedIndices.Count > 2)
-        {
-            inputMatrix = (int[])newMatrix.Clone();
-            ClearGrid();
-            DrawGrid();
-            return;
-        }
-
-        if (changedIndices.Count == 2)
-        {
-            swap(changedIndices[0], changedIndices[1]);
-        }
-        // FIX 2: Handle the case where exactly ONE thing changed
-        else if (changedIndices.Count == 1) 
-        {
-            int idx = changedIndices[0];
-            int row = idx / _cols;
-            int col = idx % _cols;
-            
-            // Re-initialize the specific cell so it updates visually
-            cells[idx].Init(row, col, newMatrix[idx]); 
-        }
-
-        inputMatrix = (int[])newMatrix.Clone();
     }
 
 
-    /* well
-    private void swap(int indexA, int indexB)
+
+    private void swap(int indexA, int indexB/*, int objectTypeA, int objectTypeB*/)
     {
         if (indexA >= cells.Count || indexB >= cells.Count) return;
 
@@ -391,12 +350,26 @@ public class MapManager : MonoBehaviour
         int colB = indexB % _cols;
 
         Character movingPlayer = FindCharacterAtPosition(colA, rowA);
+        
         if (movingPlayer != null)
         {
             Vector2Int pos = players[movingPlayer];
             pos.x = colB;
             pos.y = rowB;
             players[movingPlayer] = pos;
+        }
+        else
+        {
+            movingPlayer = FindCharacterAtPosition(colB, rowB);
+            if (movingPlayer!=null){
+                Vector2Int pos = players[movingPlayer];
+                pos.x = colA;
+                pos.y = rowA;
+                players[movingPlayer] = pos;
+
+            }
+
+
         }
 
 
@@ -460,57 +433,6 @@ public class MapManager : MonoBehaviour
         cells[indexB] = cellA;
 
     }
-    */
-
-    private void swap(int indexA, int indexB) // removed unused parameters
-    {
-        if (indexA >= cells.Count || indexB >= cells.Count) return;
-
-        Cell cellA = cells[indexA];
-        Cell cellB = cells[indexB];
-        int rowA = indexA / _cols;
-        int colA = indexA % _cols;
-        int rowB = indexB / _cols;
-        int colB = indexB % _cols;
-
-        Character movingPlayer = FindCharacterAtPosition(colA, rowA);
-        if (movingPlayer != null)
-        {
-            Vector2Int pos = players[movingPlayer];
-            pos.x = colB;
-            pos.y = rowB;
-            players[movingPlayer] = pos;
-        }
-
-        // Master asset logic...
-        for (int i = 0; i < _masterAssets.Count; i++)
-        {
-            // (Keep your existing _masterAssets logic exactly as it is here)
-            // ...
-        }
-
-        // --- THE VISUAL FIX ---
-        
-        // DELETE the 3 lines that swap the CellBackground.sprites!
-        // By leaving the sprites alone, the physical movement of the 
-        // GameObjects below will actually carry the colors to the new spots.
-
-        int tempX = cellA.X;
-        int tempY = cellA.Y;
-
-        // 1. Swap internal tracking coordinates
-        cellA.UpdateCoordinates(cellB.X, cellB.Y);
-        cellB.UpdateCoordinates(tempX, tempY);
-        
-        // 2. Swap physical screen positions
-        Vector3 tempPos = cellA.transform.localPosition;
-        cellA.transform.localPosition = cellB.transform.localPosition;
-        cellB.transform.localPosition = tempPos;
-        
-        // 3. Swap array references
-        cells[indexA] = cellB;
-        cells[indexB] = cellA;
-    }
 
     public void AddDraggableAsset(GridAsset asset)
     {
@@ -533,7 +455,7 @@ public class MapManager : MonoBehaviour
                 if (touchedCell != null)
                 {
                     touchedCell.HighlightForOneSecond(Color.green);
-                    Debug.Log($"Clicked cell at ({touchedCell.X}, {touchedCell.Y})");
+                    //Debug.Log($"Clicked cell at ({touchedCell.X}, {touchedCell.Y})");
                     OnCellTouched(touchedCell.X, touchedCell.Y, touchedCell);
                 }
             }
@@ -552,7 +474,7 @@ public class MapManager : MonoBehaviour
                 if (touchedCell != null)
                 {
                     touchedCell.HighlightForOneSecond(Color.green);
-                    Debug.Log($"Touched cell at ({touchedCell.X}, {touchedCell.Y})");
+                    //Debug.Log($"Touched cell at ({touchedCell.X}, {touchedCell.Y})");
                     OnCellTouched(touchedCell.X, touchedCell.Y, touchedCell);
                 }
             }
@@ -564,7 +486,7 @@ public class MapManager : MonoBehaviour
     {
         if (cell.IsButton)
         {
-            Debug.Log($"Button cell touched! Coordinates: ({x}, {y})");
+            //Debug.Log($"Button cell touched! Coordinates: ({x}, {y})");
             //FOR MASTER
             for (int i = 0; i < _masterAssets.Count; i++)
             {   
@@ -594,44 +516,55 @@ public class MapManager : MonoBehaviour
     }
 
     public void HighlightArea(int color, int range)
+{
+    List<Coordinate> highlightedCoords = new List<Coordinate>();
+
+    for (int i = 0; i < inputMatrix.Length; i++)
     {
-        for (int i = 0; i < inputMatrix.Length; i++)
+        if (inputMatrix[i] == color)
         {
-            if (inputMatrix[i] == color)
+            int row = i / _cols;
+            int col = i % _cols;
+
+            // bounds
+            int startX = col - range;
+            int endX = col + range;
+            int startY = row - range;
+            int endY = row + range;
+
+            startX = Mathf.Max(startX, 0);
+            endX = Mathf.Min(endX, _cols - 1);
+            startY = Mathf.Max(startY, 0);
+            endY = Mathf.Min(endY, _rows - 1);
+
+            // Highlight the square area
+            for (int y = startY; y <= endY; y++)
             {
-                int row = i / _cols;
-                int col = i % _cols;
-
-                //  bounds
-                int startX = col - range;
-                int endX = col + range;
-                int startY = row - range;
-                int endY = row + range;
-
-                startX = Mathf.Max(startX, 0);
-                endX = Mathf.Min(endX, _cols - 1);
-                startY = Mathf.Max(startY, 0);
-                endY = Mathf.Min(endY, _rows - 1);
-
-                // Highlight the square area
-                for (int y = startY; y <= endY; y++)
+                for (int x = startX; x <= endX; x++)
                 {
-                    for (int x = startX; x <= endX; x++)
+                    int index = y * _cols + x;
+                    if (index >= 0 && index < cells.Count)
                     {
-                        int index = y * _cols + x;
-                        if (index >= 0 && index < cells.Count)
+                        Cell c = cells[index];
+                        if (c != null)
                         {
-                            Cell c = cells[index];
-                            if (c != null)
-                            {
-                                c.HighlightForOneSecond(Color.red);
-                            }
+                            c.HighlightForOneSecond(Color.red);
+                            
+                            // Add the coordinates to our list
+                            highlightedCoords.Add(new Coordinate { x = x, y = y });
                         }
                     }
                 }
             }
         }
     }
+
+    // If we found and highlighted cells, send them to the server
+    if (highlightedCoords.Count > 0)
+    {
+        _ = SendHighlightsToServer(highlightedCoords);
+    }
+}
 
     public Vector2 GetCellCoordinates(Cell cell, bool worldCoordinates)
     {
@@ -669,17 +602,55 @@ public class MapManager : MonoBehaviour
         return fallbackPos;
     }
 
-
-    void PrintMap()
+    [System.Serializable]
+    public class Coordinate
     {
-        string s = "[";
-        for (int idx = 0; idx < inputMatrix.Length; idx++)
-        {
-            s += inputMatrix[idx] + " ";
-        }
-        s += "]";
+        public int x;
+        public int y;
+    }
 
-        Debug.Log(s);
+    [System.Serializable]
+    public class HighlightPayload
+    {
+        public List<Coordinate> coordinates;
+    }
+
+
+    [Header("Server Settings")]
+    [SerializeField] private string pythonServerUrl = "http://127.0.0.1:3487/highlight"; // Change to your actual server URL
+
+    // Add this inside the MapManager class
+    private async Task SendHighlightsToServer(List<Coordinate> coords)
+    {
+        HighlightPayload payload = new HighlightPayload { coordinates = coords };
+        string jsonData = JsonUtility.ToJson(payload);
+
+        using (UnityWebRequest request = new UnityWebRequest(pythonServerUrl, "POST"))
+        {
+            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            // Send the request
+            var operation = request.SendWebRequest();
+
+            // Wait for it to finish asynchronously
+            while (!operation.isDone)
+            {
+                await Task.Yield();
+            }
+
+            if (request.result == UnityWebRequest.Result.ConnectionError || 
+                request.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.LogError($"Error sending highlights to server: {request.error}");
+            }
+            else
+            {
+                Debug.Log("Successfully sent highlight coordinates to Python server.");
+            }
+        }
     }
 
 }

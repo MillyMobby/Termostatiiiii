@@ -186,4 +186,12 @@ public class Cell : MonoBehaviour
         isHighlighted = false;
         highlightCoroutine = null;
     }
+
+    public void SetEmpty()
+    {
+        contentRenderer.enabled = false;
+        contentRenderer.sprite = null;
+        objectType = 0;
+    }
+
 }
