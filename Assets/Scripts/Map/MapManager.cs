@@ -107,7 +107,7 @@ public class MapManager : MonoBehaviour
 
         for (int i = 0; i < inputMatrix.Length; i++)
         {
-            if (inputMatrix[i] != 0 && cells[i].IsButton && inputMatrix[i]!=1) //non assegno il player rosso così posso ancora testare il drag and drop
+            if (inputMatrix[i] != 0 && cells[i].IsButton && inputMatrix[i]!=1) //non assegno il player rosso cosï¿½ posso ancora testare il drag and drop
             {
                 foreach (Character c in characters)
                 {
@@ -197,6 +197,7 @@ public class MapManager : MonoBehaviour
     }
 
 
+    /* well
     void HandleNewMapData(int[] newMatrix, int newRows, int newCols)
     {
         if (newRows != _rows || newCols != _cols)
@@ -208,6 +209,8 @@ public class MapManager : MonoBehaviour
             DraggableAsset.Cols = _cols;
             inputMatrix = new int[_rows * _cols];
 
+            PrintMap();
+
             ClearGrid();
             DrawGrid();
             UpdateGrid(newMatrix);
@@ -218,6 +221,33 @@ public class MapManager : MonoBehaviour
         }
         UpdateGrid(newMatrix);
 
+    }
+    */
+
+    void HandleNewMapData(int[] newMatrix, int newRows, int newCols)
+    {
+        if (newRows != _rows || newCols != _cols)
+        {
+            _rows = newRows;
+            _cols = newCols;
+
+            DraggableAsset.Rows = _rows;
+            DraggableAsset.Cols = _cols;
+            
+            // FIX 1: Clone the actual new data BEFORE drawing the grid
+            inputMatrix = (int[])newMatrix.Clone();
+
+            PrintMap(); // This will now accurately print the '3'
+
+            ClearGrid();
+            DrawGrid(); // Draws using the populated inputMatrix
+            
+            // Removed UpdateGrid(newMatrix) here because DrawGrid already handled it
+            AssignAllCharacters();
+            UpdateMonstersAndObstaclesInstances();
+            return;
+        }
+        UpdateGrid(newMatrix);
     }
 
 
@@ -266,11 +296,14 @@ public class MapManager : MonoBehaviour
                 spawnedTile.transform.localScale = targetScale;
 
                 spawnedTile.name = $"Tile ({row}x{col})";
+
                 spawnedTile.Init(row, col, inputMatrix[index]);
                 cells.Add(spawnedTile);
             }
         }
     }
+
+    /* well
     public void UpdateGrid(int[] newMatrix)
     {
         List<int> changedIndices = new List<int>();
@@ -297,15 +330,56 @@ public class MapManager : MonoBehaviour
 
         if (changedIndices.Count == 2)
         {
-            swap(changedIndices[0], changedIndices[1]/*, values[0], values[1]*/);
+            swap(changedIndices[0], changedIndices[1]);
+        }
+
+        inputMatrix = (int[])newMatrix.Clone();
+    }
+    */
+
+    public void UpdateGrid(int[] newMatrix)
+    {
+        List<int> changedIndices = new List<int>();
+
+        for (int i = 0; i < inputMatrix.Length; i++)
+        {
+            if (inputMatrix[i] != newMatrix[i])
+            {
+                changedIndices.Add(i);
+            }
+        }
+
+        if (changedIndices.Count == 0) return; // Optional: early exit if nothing changed
+
+        if (changedIndices.Count > 2)
+        {
+            inputMatrix = (int[])newMatrix.Clone();
+            ClearGrid();
+            DrawGrid();
+            return;
+        }
+
+        if (changedIndices.Count == 2)
+        {
+            swap(changedIndices[0], changedIndices[1]);
+        }
+        // FIX 2: Handle the case where exactly ONE thing changed
+        else if (changedIndices.Count == 1) 
+        {
+            int idx = changedIndices[0];
+            int row = idx / _cols;
+            int col = idx % _cols;
+            
+            // Re-initialize the specific cell so it updates visually
+            cells[idx].Init(row, col, newMatrix[idx]); 
         }
 
         inputMatrix = (int[])newMatrix.Clone();
     }
 
 
-
-    private void swap(int indexA, int indexB/*, int objectTypeA, int objectTypeB*/)
+    /* well
+    private void swap(int indexA, int indexB)
     {
         if (indexA >= cells.Count || indexB >= cells.Count) return;
 
@@ -385,6 +459,57 @@ public class MapManager : MonoBehaviour
         cells[indexA] = cellB;
         cells[indexB] = cellA;
 
+    }
+    */
+
+    private void swap(int indexA, int indexB) // removed unused parameters
+    {
+        if (indexA >= cells.Count || indexB >= cells.Count) return;
+
+        Cell cellA = cells[indexA];
+        Cell cellB = cells[indexB];
+        int rowA = indexA / _cols;
+        int colA = indexA % _cols;
+        int rowB = indexB / _cols;
+        int colB = indexB % _cols;
+
+        Character movingPlayer = FindCharacterAtPosition(colA, rowA);
+        if (movingPlayer != null)
+        {
+            Vector2Int pos = players[movingPlayer];
+            pos.x = colB;
+            pos.y = rowB;
+            players[movingPlayer] = pos;
+        }
+
+        // Master asset logic...
+        for (int i = 0; i < _masterAssets.Count; i++)
+        {
+            // (Keep your existing _masterAssets logic exactly as it is here)
+            // ...
+        }
+
+        // --- THE VISUAL FIX ---
+        
+        // DELETE the 3 lines that swap the CellBackground.sprites!
+        // By leaving the sprites alone, the physical movement of the 
+        // GameObjects below will actually carry the colors to the new spots.
+
+        int tempX = cellA.X;
+        int tempY = cellA.Y;
+
+        // 1. Swap internal tracking coordinates
+        cellA.UpdateCoordinates(cellB.X, cellB.Y);
+        cellB.UpdateCoordinates(tempX, tempY);
+        
+        // 2. Swap physical screen positions
+        Vector3 tempPos = cellA.transform.localPosition;
+        cellA.transform.localPosition = cellB.transform.localPosition;
+        cellB.transform.localPosition = tempPos;
+        
+        // 3. Swap array references
+        cells[indexA] = cellB;
+        cells[indexB] = cellA;
     }
 
     public void AddDraggableAsset(GridAsset asset)
@@ -543,4 +668,18 @@ public class MapManager : MonoBehaviour
         Debug.Log($"Using fallback position (no RectTransform): {fallbackPos}");
         return fallbackPos;
     }
+
+
+    void PrintMap()
+    {
+        string s = "[";
+        for (int idx = 0; idx < inputMatrix.Length; idx++)
+        {
+            s += inputMatrix[idx] + " ";
+        }
+        s += "]";
+
+        Debug.Log(s);
+    }
+
 }

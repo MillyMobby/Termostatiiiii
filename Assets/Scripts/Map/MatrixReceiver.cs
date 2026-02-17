@@ -55,6 +55,7 @@ public class MatrixReceiver : MonoBehaviour
         }
     }
 
+/*
     private void BackgroundReceive()
     {
         while (isRunning)
@@ -98,6 +99,66 @@ public class MatrixReceiver : MonoBehaviour
                 Thread.Sleep(100);
             }
             Thread.Sleep(100);
+        }
+    }
+*/
+
+    private void BackgroundReceive()
+    {
+        while (isRunning)
+        {
+            try
+            {
+                using (TcpClient client = new TcpClient(serverIP, port))
+                using (NetworkStream stream = client.GetStream())
+                {
+                    Debug.Log("Connected to C++ Server");
+
+                    // Keep reading from the SAME connection
+                    while (isRunning)
+                    {
+                        // 1. Read Header
+                        byte[] headerBuffer = new byte[16];
+                        ReadFully(stream, headerBuffer, 16);
+                        
+                        int rows = BitConverter.ToInt32(headerBuffer, 4);
+                        int cols = BitConverter.ToInt32(headerBuffer, 8);
+
+                        // 2. Read Body
+                        int totalElements = rows * cols;
+                        int bodySize = totalElements * 4;
+                        byte[] bodyBuffer = new byte[bodySize];
+                        ReadFully(stream, bodyBuffer, bodySize);
+
+                        // 3. Process into Array
+                        int[] tempArray = new int[totalElements];
+                        for (int i = 0; i < totalElements; i++)
+                        {
+                            tempArray[i] = BitConverter.ToInt32(bodyBuffer, i * 4);
+                        }
+
+                        // 4. Update Shared Data safely
+                        lock (lockObject)
+                        {
+                            latestArray = tempArray;
+                            latestRows = rows;
+                            latestCols = cols;
+                            _hasNewData = true; // Tell Update() to fire the event
+                            string s = "[";
+                            for (int i = 0; i < latestArray.Length; i++) s += latestArray[i];
+                            s += "]";
+                            Debug.Log(s);
+
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                // If the stream breaks (C++ server closes or errors), 
+                // the loop breaks, we sleep, and try to connect again.
+                Thread.Sleep(500); 
+            }
         }
     }
 
