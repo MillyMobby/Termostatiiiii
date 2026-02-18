@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
-    using System.Threading.Tasks;
+using System.Threading.Tasks;
 using UnityEngine.Networking;
 
 public class MapManager : MonoBehaviour
@@ -541,7 +541,7 @@ public class MapManager : MonoBehaviour
     }
 
     public void HighlightArea(int color, int range)
-{
+    {
     List<Coordinate> highlightedCoords = new List<Coordinate>();
 
     for (int i = 0; i < inputMatrix.Length; i++)
@@ -597,7 +597,7 @@ public class MapManager : MonoBehaviour
     // If we found and highlighted cells, send them to the server
     if (highlightedCoords.Count > 0)
     {
-        _ = SendHighlightsToServer(highlightedCoords);
+        _ = SendHighlightsToServer(highlightedCoords, color);
     }
 }
 
@@ -648,16 +648,17 @@ public class MapManager : MonoBehaviour
     public class HighlightPayload
     {
         public List<Coordinate> coordinates;
+        public int id;
     }
 
 
     [Header("Server Settings")]
-    [SerializeField] private string pythonServerUrl = "http://127.0.0.1:3487/highlight"; // Change to your actual server URL
+    private string pythonServerUrl = "http://127.0.0.1:3487/highlight"; // Change to your actual server URL
 
     // Add this inside the MapManager class
-    private async Task SendHighlightsToServer(List<Coordinate> coords)
+    private async Task SendHighlightsToServer(List<Coordinate> coords, int id)
     {
-        HighlightPayload payload = new HighlightPayload { coordinates = coords };
+        HighlightPayload payload = new HighlightPayload { coordinates = coords, id=id };
         string jsonData = JsonUtility.ToJson(payload);
 
         using (UnityWebRequest request = new UnityWebRequest(pythonServerUrl, "POST"))
