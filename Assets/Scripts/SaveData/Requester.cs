@@ -32,7 +32,6 @@ public class Requester
             JArray array = JArray.Parse(json);
             foreach (JObject obj in array.Children<JObject>())
             {
-
                 var character = new Character
                 {
                     Name = obj["Name"]?.ToString(),
@@ -57,9 +56,9 @@ public class Requester
                 };
                 character.Color = character.Name switch
                 {
-                    "Karina" => 2,
-                    "Kabo" => 1,
-                    "Cheese" => 3,
+                    "Karina" => 3,
+                    "Kabo" => 2,
+                    "Cheese" => 1,
                     _ => 0
                 };
                 characters.Add(character);
@@ -361,5 +360,41 @@ public class Requester
             }
             return listObstacles;
         }
+    }
+
+    public static async void SetPlayerPf(string name, int new_pf)
+    {
+        UnityWebRequest www = UnityWebRequest.Put($"https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/characters?name={name}&pf={new_pf}", "");
+        await www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("Couldn't send POST request: " + www.error);
+        }
+        return;
+    }
+
+    public static async void SetMonsterPf(int x, int new_pf, int y)
+    {
+        UnityWebRequest www = UnityWebRequest.Put($"https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/monsters/instance?x={x}&pf={new_pf}&y={y}", "");
+        await www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("Couldn't send POST request: " + www.error);
+        }
+        return;
+    }
+
+    public static async void SetObstaclePf(int x, int new_pf, int y)
+    {
+        UnityWebRequest www = UnityWebRequest.Put($"https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/obstacles/instance?x={x}&pf={new_pf}&y={y}", "");
+        await www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("Couldn't send POST request: " + www.error);
+        }
+        return;
     }
 }
