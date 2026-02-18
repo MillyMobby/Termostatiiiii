@@ -590,7 +590,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1065a481ca0284b1b9419c11f0104e63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatrixReceiver
-  serverIP: 127.0.0.1
+  serverIP: 192.168.1.14
   port: 6969
 --- !u!4 &938095197
 Transform:

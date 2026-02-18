@@ -13,13 +13,14 @@ public static class ActionPerformer
         }
 
         int damageAmount = CalculateDamage(action.damage);
-        target.Current_Pf = Mathf.Max(0, target.Current_Pf - damageAmount);
+        
+        int pf = Mathf.Max(0, target.Current_Pf - damageAmount);
 
         Debug.Log($"{action.actionName} performed on {target.Name}. Dealt {damageAmount} damage. " +
-                  $"Current PF: {target.Current_Pf}/{target.Max_Pf}");
+                  $"Current PF: {pf}/{target.Max_Pf}");
 
         // Return the new PF value
-        return target.Current_Pf;
+        return pf;
     }
 
     private static int CalculateDamage(string damage)

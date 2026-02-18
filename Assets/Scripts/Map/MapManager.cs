@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
+using System.Runtime.CompilerServices;
 
 public class MapManager : MonoBehaviour
 {
@@ -63,10 +64,10 @@ public class MapManager : MonoBehaviour
         }
     }
 
-    public void processInstances(List<Requester.Instance> instances, int type) {
+    public void processInstances(List<Requester.Instance> instances, int type, bool isFirst) {
         foreach (Requester.Instance instance in instances)
         {
-            if (_masterMode)
+            if (_masterMode && isFirst)
             {
                 if (type==0) { Requester.DeleteMonster(instance.x, instance.y); }
                 else if (type ==1) { Requester.DeleteObstacle(instance.x, instance.y); }
@@ -93,21 +94,21 @@ public class MapManager : MonoBehaviour
         //Debug.Log($" instances = {_masterAssets.Count}");
     }
 
-    public async void UpdateMonstersAndObstaclesInstances()
+    public async void UpdateMonstersAndObstaclesInstances(bool isFirst)
     {
         List<Requester.Instance> monsterInstances = await Requester.GetMonsterInstances();
         foreach (var obs in monsterInstances)
         {
             Debug.Log($"Obstacle instance: type={obs.type}, x={obs.x}, y={obs.y}, pf={obs.curr_pf}");
         }
-        processInstances(monsterInstances, 0);
+        processInstances(monsterInstances, 0, isFirst);
         List<Requester.Instance> obstacleInstances = await Requester.GetObstacleInstances();
 
         foreach (var obs in obstacleInstances)
         {
             Debug.Log($"Obstacle instance: type={obs.type}, x={obs.x}, y={obs.y}, pf={obs.curr_pf}");
         }
-        processInstances(obstacleInstances, 1);        
+        processInstances(obstacleInstances, 1, isFirst);        
     }
     public void AssignAllCharacters()
     {
@@ -221,11 +222,12 @@ public class MapManager : MonoBehaviour
             DrawGrid();
             UpdateGrid(newMatrix);
             AssignAllCharacters();
-            UpdateMonstersAndObstaclesInstances();
+            UpdateMonstersAndObstaclesInstances(true);
             return;
 
         }
         UpdateGrid(newMatrix);
+        UpdateMonstersAndObstaclesInstances(false);
 
 
     }
@@ -285,6 +287,7 @@ public class MapManager : MonoBehaviour
     }
     public void UpdateGrid(int[] newMatrix)
     {
+        
         List<int> changedIndices = new List<int>();
         List<int> values = new List<int>();
         List<Sprite> sprites = new List<Sprite>();
@@ -359,6 +362,7 @@ public class MapManager : MonoBehaviour
                 cells[changedIndices[0]].UpdateValue(color);
             }
         }
+        
     }
 
 
@@ -507,7 +511,7 @@ public class MapManager : MonoBehaviour
     }
 
 
-    void OnCellTouched(int x, int y, Cell cell)
+    async Task OnCellTouched(int x, int y, Cell cell)
     {
         if (cell.IsButton)
         {
@@ -533,6 +537,7 @@ public class MapManager : MonoBehaviour
             Character character = FindCharacterAtPosition(cell.Y, cell.X);
             if (character != null)
             {
+                character.Current_Pf = await Requester.GetPlayerPf(character.Name);
                 Vector2 position = GetCellCoordinates(cell, true);
                 if (cell.Y > 0) { popupManager.ShowPopup(character, new Vector3(position.x, position.y, 100)); }
                 else { popupManager.ShowPopup(character, new Vector3(position.x, position.y + 2, 100)); }
@@ -583,7 +588,12 @@ public class MapManager : MonoBehaviour
                                     if (victim != null) {
                                         UserPopup user = FindAnyObjectByType<UserPopup>();
                                         int newCurrentPf = ActionPerformer.PerformActionOnEntity(user.ActionPerformed, victim);
-                                        victim.Current_Pf = newCurrentPf;
+                                        ActionRequest actionRequest = new ActionRequest
+                                        {
+                                            newPF = newCurrentPf,
+                                            victim = victim
+                                        };
+                                        pendingActions.Add(actionRequest);
                                     }
                                     
                             }
@@ -593,7 +603,7 @@ public class MapManager : MonoBehaviour
             }
         }
     }
-
+    
     // If we found and highlighted cells, send them to the server
     if (highlightedCoords.Count > 0)
     {
@@ -649,11 +659,20 @@ public class MapManager : MonoBehaviour
     {
         public List<Coordinate> coordinates;
         public int id;
+
     }
 
 
     [Header("Server Settings")]
-    private string pythonServerUrl = "http://127.0.0.1:3487/highlight"; // Change to your actual server URL
+    private string pythonServerUrl = "http://192.168.1.14:3487/highlight"; // Change to your actual server URL
+
+    private struct ActionRequest
+    {
+        public int newPF;
+        public Character victim;
+    }
+
+    private List <ActionRequest> pendingActions = new List<ActionRequest>();
 
     // Add this inside the MapManager class
     private async Task SendHighlightsToServer(List<Coordinate> coords, int id)
@@ -685,6 +704,12 @@ public class MapManager : MonoBehaviour
             else
             {
                 Debug.Log("Successfully sent highlight coordinates to Python server.");
+                foreach (var action in pendingActions)
+                {
+                    Requester.SetPlayerPf(action.victim.Name, action.newPF);
+                    action.victim.Current_Pf = action.newPF; 
+                }
+
             }
         }
     }

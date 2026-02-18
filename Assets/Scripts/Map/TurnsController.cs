@@ -10,7 +10,7 @@ using System.Linq;
 public class TurnsController : MonoBehaviour
 {
     [SerializeField] private ToggleGroup toggleGroup;
-    private string pythonServerUrl = "http://127.0.0.1:3487/highlight";
+    private string pythonServerUrl = "http://192.168.1.14:3487/highlight";
 
     public enum Turn
     {
