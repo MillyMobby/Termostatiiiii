@@ -1022,6 +1022,7 @@ GameObject:
   - component: {fileID: 1773343067}
   - component: {fileID: 1773343066}
   - component: {fileID: 1773343065}
+  - component: {fileID: 1773343069}
   m_Layer: 5
   m_Name: IP Button
   m_TagString: Untagged
@@ -1155,6 +1156,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1773343063}
   m_CullTransparentMesh: 1
+--- !u!114 &1773343069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1773343063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b7adddf93e654f45a352b67323d2380, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::tempIp
+  cameraIp: 192.168.1.14
+  projectorIp: 192.168.1.14
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

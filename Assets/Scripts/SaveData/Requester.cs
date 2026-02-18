@@ -63,6 +63,7 @@ public class Requester
                 };
                 characters.Add(character);
             }
+            characters.Sort((x, y) => x.Name.CompareTo(y.Name));
             return characters;
         }
     }

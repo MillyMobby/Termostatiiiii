@@ -44,14 +44,15 @@ public class MapManager : MonoBehaviour
 
 
     public void AssignInstanceInGrid(int color, WorldEntity instance, int pf)
+
     {
+       
         for (int i = 0; i < inputMatrix.Length; i++)
         {
             if (inputMatrix[i] == color)
             {
                 int row = i / _cols;
                 int col = i % _cols;
-                cells[i].SetEmpty();
                 GridAsset asset = GridAssetFactory.CreateGridAsset<GridAsset>(
                             instance,
                             row,
@@ -59,7 +60,6 @@ public class MapManager : MonoBehaviour
                             pf
                         );
                 AddDraggableAsset(asset);
-                cells[i].UpdateValue(color);
 
                 asset.ProcessDropOnCell(_masterMode);
             }
@@ -98,6 +98,7 @@ public class MapManager : MonoBehaviour
 
     public async void UpdateMonstersAndObstaclesInstances(bool isFirst)
     {
+        _masterAssets.Clear();
         List<Requester.Instance> monsterInstances = await Requester.GetMonsterInstances();
         foreach (var obs in monsterInstances)
         {
@@ -595,7 +596,10 @@ public class MapManager : MonoBehaviour
                                             newPF = newCurrentPf,
                                             victim = victim
                                         };
-                                        pendingActions.Add(actionRequest);
+                                        if (index != i) { 
+                                            pendingActions.Add(actionRequest);
+                                        }
+                                        
                                     }
                                     
                             }
@@ -710,8 +714,9 @@ public class MapManager : MonoBehaviour
                 {
                     Requester.SetPlayerPf(action.victim.Name, action.newPF);
                     action.victim.Current_Pf = action.newPF; 
+                    
                 }
-
+                Handheld.Vibrate();
             }
         }
     }
