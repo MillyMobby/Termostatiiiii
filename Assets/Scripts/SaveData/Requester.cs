@@ -369,7 +369,7 @@ public class Requester
 
         if (www.result != UnityWebRequest.Result.Success)
         {
-            Debug.Log("Couldn't send POST request: " + www.error);
+            Debug.Log("Couldn't send PUT request: " + www.error);
         }
         return;
     }
@@ -381,7 +381,7 @@ public class Requester
 
         if (www.result != UnityWebRequest.Result.Success)
         {
-            Debug.Log("Couldn't send POST request: " + www.error);
+            Debug.Log("Couldn't send PUT request: " + www.error);
         }
         return;
     }
@@ -393,8 +393,25 @@ public class Requester
 
         if (www.result != UnityWebRequest.Result.Success)
         {
-            Debug.Log("Couldn't send POST request: " + www.error);
+            Debug.Log("Couldn't send PUT request: " + www.error);
         }
         return;
+    }
+
+    public static async Task<int> GetPlayerPf (string name)
+    {
+        UnityWebRequest www = UnityWebRequest.Get($"https://o9wbc90xbl.execute-api.eu-north-1.amazonaws.com/characters/character?name={name}");
+        await www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("Couldn't send POST request: " + www.error);
+            return 0;
+        }
+        else
+        {
+            int result = int.Parse(www.downloadHandler.text);
+            return result;
+        }
     }
 }
