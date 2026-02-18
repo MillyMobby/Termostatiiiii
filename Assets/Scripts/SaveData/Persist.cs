@@ -4,7 +4,20 @@ using UnityEngine;
 
 public class Persist : MonoBehaviour
 {
+    public static Persist Instance { get; private set; }
 
+    private static string projectorIP = "127.0.0.1";
+    public static string ProjectorIP
+    {
+        get => projectorIP;
+        set => projectorIP = value;
+    }
+    private static string cameraIP = "127.0.0.1";
+    public static string CameraIP
+    {
+        get => cameraIP;
+        set => cameraIP = value;
+    }
     private static List<Character> characters = new List<Character>();
     public static List<Character> Characters => characters;
     private static List<Monster> monsters;
@@ -21,9 +34,16 @@ public class Persist : MonoBehaviour
         private set => isLoaded = value;
     }
 
-
     async void Awake()
     {
+        // If an instance already exists and it's not this one → destroy this duplicate
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
         DontDestroyOnLoad(gameObject);
 
         if (characters.Count == 0)
@@ -31,6 +51,7 @@ public class Persist : MonoBehaviour
             characters = await Requester.RequestCharacters();
             IsLoaded = true;
             OnDataLoaded?.Invoke();
+
             monsters = await Requester.RequestMonsters();
             obstacles = await Requester.RequestObstacles();
 
@@ -47,6 +68,7 @@ public class Persist : MonoBehaviour
                 List<CreatureEntity.Action> actions = await Requester.RequestMonsterActions(monster.Name);
                 monster.Actions = actions;
             }
+
             Debug.Log("Finito di caricare");
         }
     }

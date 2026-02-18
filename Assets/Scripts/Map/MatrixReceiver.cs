@@ -6,7 +6,7 @@ using System.Threading;
 public class MatrixReceiver : MonoBehaviour
 {
     [Header("Network Settings")]
-    public string serverIP = "192.168.1.14:3487";
+    public string serverIP = $"{Persist.CameraIP}";
     public int port = 6969;
 
     private Thread receiveThread;

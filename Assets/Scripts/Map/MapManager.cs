@@ -664,7 +664,7 @@ public class MapManager : MonoBehaviour
 
 
     [Header("Server Settings")]
-    private string pythonServerUrl = "http://192.168.1.14:3487/highlight"; // Change to your actual server URL
+    private string pythonServerUrl = $"http://{Persist.ProjectorIP}:3487/highlight"; // Change to your actual server URL
 
     private struct ActionRequest
     {
