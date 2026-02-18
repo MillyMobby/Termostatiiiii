@@ -1,18 +1,21 @@
-//using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-//using System.Threading.Tasks;
-//using TMPro;
 using UnityEngine;
-//using UnityEngine.EventSystems;
-//using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
-//using static UnityEngine.EventSystems.EventTrigger;
+
 
 public class UserPopup : MonoBehaviour
 {
     private Character currentPlayer;
-    private int color = 1;
+    private CreatureEntity.Action actionPerformed;
+    public CreatureEntity.Action ActionPerformed
+    {
+        get => actionPerformed;
+        set
+        {
+            actionPerformed = value;
+        }
+    }
 
     public class Entity //bottone
     {
@@ -35,7 +38,7 @@ public class UserPopup : MonoBehaviour
     private async void Start()
     {
         currentPlayer = Persist.Characters.FirstOrDefault(p => p.Name == PlayerPrefs.GetString("name"));
-        color = currentPlayer.Color;
+        //color = currentPlayer.Color;
         Debug.Log($"Current player set to: {currentPlayer?.Name}");
 
         if (currentPlayer?.Actions != null)
@@ -101,12 +104,13 @@ public class UserPopup : MonoBehaviour
     void OnActionButtonClicked(CreatureEntity.Action action)
     {
         Debug.Log($"Range: {action.range}\n");
+        actionPerformed = action;
         DisplayRange(action.range);
     }
 
     public void DisplayRange(int range)
     {
-        if (range != 101) { MapManager.Instance.HighlightArea(color, range); } // 101 voleva dire no range se non sbaglio
+        if (range != 101) { MapManager.Instance.HighlightArea(1, range); } // 101 voleva dire no range se non sbaglio
 
     }
 }

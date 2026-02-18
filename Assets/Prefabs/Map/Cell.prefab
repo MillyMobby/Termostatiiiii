@@ -236,14 +236,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a574daf9241ec482887b8ff6adacffa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Cell
-  manager: {fileID: 0}
-  objectType: 0
-  isButton: 0
   x: 0
   y: 0
   redPlayer: {fileID: 8166710274925509176, guid: 04f69db5f8b9fd140a6cc117903aa8d7, type: 3}
   greenPlayer: {fileID: -6099873399732076034, guid: 7d99116e62195c54bae9a68fc3b3e4a1, type: 3}
   bluePlayer: {fileID: -2615874204119335, guid: 5edf87865aefad04598462e0dfcc02da, type: 3}
+  orangePlayer: {fileID: -6410442598547967069, guid: 4c14b0f2de142458d8bbb0fe2c8e7f16, type: 3}
+  highlightIntensity: 0.3
   cellBackground: {fileID: 3920615507227274274}
   contentRenderer: {fileID: 821913447002044608}
 --- !u!61 &1339872849192448905

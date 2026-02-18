@@ -13,7 +13,11 @@ public class ButtonSpawner : MonoBehaviour
 
 
     [Header("Testing data")]
-    private Color[] colors = { Color.red, Color.green, Color.blue };
+    private Color[] colors = {
+        new Color(251f/255f, 77f/255f, 61f/255f),
+        new Color(158f/255f, 227f/255f, 125f/255f),
+        new Color(170f/255f, 239f/255f, 223f/255f)
+    };
 
 
     void Start()

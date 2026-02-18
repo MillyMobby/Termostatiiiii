@@ -19,7 +19,7 @@ public class MatrixReceiver : MonoBehaviour
     private readonly object lockObject = new object();
 
     // Flag to tell the Main Thread we have new data
-    private bool _hasNewData = false;
+    private volatile bool _hasNewData = false;
 
     // ** EVENT DEFINITION **
     // The Manager will listen to this. Passes: Array, Rows, Cols
@@ -104,63 +104,45 @@ public class MatrixReceiver : MonoBehaviour
 */
 
     private void BackgroundReceive()
+{
+    while (isRunning)
     {
-        while (isRunning)
+        try
         {
-            try
+            using (TcpClient client = new TcpClient(serverIP, port))
+            using (NetworkStream stream = client.GetStream())
             {
-                using (TcpClient client = new TcpClient(serverIP, port))
-                using (NetworkStream stream = client.GetStream())
+                // Read header
+                byte[] headerBuffer = new byte[16];
+                ReadFully(stream, headerBuffer, 16);
+
+                int rows = BitConverter.ToInt32(headerBuffer, 4);
+                int cols = BitConverter.ToInt32(headerBuffer, 8);
+
+                // Read body
+                int totalElements = rows * cols;
+                byte[] bodyBuffer = new byte[totalElements * 4];
+                ReadFully(stream, bodyBuffer, totalElements * 4);
+
+                int[] tempArray = new int[totalElements];
+                for (int i = 0; i < totalElements; i++)
+                    tempArray[i] = BitConverter.ToInt32(bodyBuffer, i * 4);
+
+                lock (lockObject)
                 {
-                    Debug.Log("Connected to C++ Server");
-
-                    // Keep reading from the SAME connection
-                    while (isRunning)
-                    {
-                        // 1. Read Header
-                        byte[] headerBuffer = new byte[16];
-                        ReadFully(stream, headerBuffer, 16);
-                        
-                        int rows = BitConverter.ToInt32(headerBuffer, 4);
-                        int cols = BitConverter.ToInt32(headerBuffer, 8);
-
-                        // 2. Read Body
-                        int totalElements = rows * cols;
-                        int bodySize = totalElements * 4;
-                        byte[] bodyBuffer = new byte[bodySize];
-                        ReadFully(stream, bodyBuffer, bodySize);
-
-                        // 3. Process into Array
-                        int[] tempArray = new int[totalElements];
-                        for (int i = 0; i < totalElements; i++)
-                        {
-                            tempArray[i] = BitConverter.ToInt32(bodyBuffer, i * 4);
-                        }
-
-                        // 4. Update Shared Data safely
-                        lock (lockObject)
-                        {
-                            latestArray = tempArray;
-                            latestRows = rows;
-                            latestCols = cols;
-                            _hasNewData = true; // Tell Update() to fire the event
-                            string s = "[";
-                            for (int i = 0; i < latestArray.Length; i++) s += latestArray[i];
-                            s += "]";
-                            Debug.Log(s);
-
-                        }
-                    }
+                    latestArray = tempArray;
+                    latestRows = rows;
+                    latestCols = cols;
+                    _hasNewData = true;
                 }
             }
-            catch (Exception e)
-            {
-                // If the stream breaks (C++ server closes or errors), 
-                // the loop breaks, we sleep, and try to connect again.
-                Thread.Sleep(500); 
-            }
+        }
+        catch
+        {
+            Thread.Sleep(50);
         }
     }
+}
 
     private void ReadFully(NetworkStream stream, byte[] buffer, int size)
     {
@@ -176,6 +158,7 @@ public class MatrixReceiver : MonoBehaviour
     private void OnApplicationQuit()
     {
         isRunning = false;
-        if (receiveThread != null) receiveThread.Abort();
+        //if (receiveThread != null) receiveThread.Abort();
+        if (receiveThread != null && receiveThread.IsAlive) receiveThread.Join();
     }
 }

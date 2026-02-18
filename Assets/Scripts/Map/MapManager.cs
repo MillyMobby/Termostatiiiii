@@ -41,6 +41,28 @@ public class MapManager : MonoBehaviour
     private List<Cell> cells = new List<Cell> { };
     public List<Cell> Cells => cells;
 
+
+    public void AssignInstanceInGrid(int color, WorldEntity instance, int pf)
+    {
+        for (int i = 0; i < inputMatrix.Length; i++)
+        {
+            if (inputMatrix[i] == color)
+            {
+                int row = i / _cols;
+                int col = i % _cols;
+                GridAsset asset = GridAssetFactory.CreateGridAsset<GridAsset>(
+                            instance,
+                            row,
+                            col,
+                            pf
+                        );
+                AddDraggableAsset(asset);
+
+                asset.ProcessDropOnCell(_masterMode);
+            }
+        }
+    }
+
     public void processInstances(List<Requester.Instance> instances, int type) {
         foreach (Requester.Instance instance in instances)
         {
@@ -62,31 +84,15 @@ public class MapManager : MonoBehaviour
                 {
                     if (m.Name == instance.type)
                     {
-                        // GridAsset asset = GridAssetFactory.CreateGridAsset(
-                        //     gridAssetPrefab.GetComponent<GridAsset>(), 
-                        //     m, 
-                        //     monsterInstance.x, 
-                        //     monsterInstance.y, 
-                        //     monsterInstance.curr_pf,
-                        //     this.transform
-                        // );
-                        Debug.Log($" istanza {instance.type},{instance.x}, {instance.y},{instance.curr_pf}");
-
-                        GridAsset asset = GridAssetFactory.CreateGridAsset<GridAsset>(
-                            m,
-                            instance.x,
-                            instance.y,
-                            instance.curr_pf
-                        );
-                        AddDraggableAsset(asset);
-
-                        asset.ProcessDropOnCell(_masterMode);
+                        AssignInstanceInGrid(5, m, instance.curr_pf);
+                        
                     }
                 }
             }
         }
         //Debug.Log($" instances = {_masterAssets.Count}");
     }
+
     public async void UpdateMonstersAndObstaclesInstances()
     {
         List<Requester.Instance> monsterInstances = await Requester.GetMonsterInstances();
@@ -109,7 +115,7 @@ public class MapManager : MonoBehaviour
 
         for (int i = 0; i < inputMatrix.Length; i++)
         {
-            if (inputMatrix[i] != 0 && cells[i].IsButton && inputMatrix[i]!=1) //non assegno il player rosso così posso ancora testare il drag and drop
+            if (inputMatrix[i] != 0 && cells[i].IsButton) //non assegno il player rosso così posso ancora testare il drag and drop
             {
                 foreach (Character c in characters)
                 {
@@ -205,6 +211,7 @@ public class MapManager : MonoBehaviour
         {
             _rows = newRows;
             _cols = newCols;
+            PrintMatrix(newMatrix);
 
             DraggableAsset.Rows = _rows;
             DraggableAsset.Cols = _cols;
@@ -237,6 +244,8 @@ public class MapManager : MonoBehaviour
 
     void DrawGrid()
     {
+        Debug.Log("drawwww");
+        PrintMatrix(inputMatrix);
         if (_rows <= 0 || _cols <= 0) return;
 
         // 1. Calculate and set the Canvas size
@@ -302,12 +311,28 @@ public class MapManager : MonoBehaviour
 
         if (changedIndices.Count == 2)
         {
-            swap(changedIndices[0], changedIndices[1]/*, values[0], values[1]*/);
+            if (
+                newMatrix[changedIndices[0]] != newMatrix[changedIndices[1]] && 
+                newMatrix[changedIndices[0]] != 0 &&
+                newMatrix[changedIndices[1]] != 0 &&
+                inputMatrix[changedIndices[0]] == 0 &&
+                inputMatrix[changedIndices[1]] == 0
+            )
+            {
+                inputMatrix = newMatrix;
+                ClearGrid();
+                DrawGrid();
+                return;
+            } 
+            else
+            {
+                swap(changedIndices[0], changedIndices[1]/*, values[0], values[1]*/);
+            }
         }
 
         inputMatrix = (int[])newMatrix.Clone();
 
-        if (changedIndices.Count ==1)
+        if (changedIndices.Count == 1)
         {
             int color = newMatrix[changedIndices[0]];
 
@@ -552,6 +577,16 @@ public class MapManager : MonoBehaviour
                             
                             // Add the coordinates to our list
                             highlightedCoords.Add(new Coordinate { x = x, y = y });
+
+                            if (c.IsButton) {
+                                    Character victim = FindCharacterAtPosition(c.Y, c.X);
+                                    if (victim != null) {
+                                        UserPopup user = FindAnyObjectByType<UserPopup>();
+                                        int newCurrentPf = ActionPerformer.PerformActionOnEntity(user.ActionPerformed, victim);
+                                        victim.Current_Pf = newCurrentPf;
+                                    }
+                                    
+                            }
                         }
                     }
                 }
@@ -651,6 +686,18 @@ public class MapManager : MonoBehaviour
                 Debug.Log("Successfully sent highlight coordinates to Python server.");
             }
         }
+    }
+
+
+    void PrintMatrix(int[] mat)
+    {
+        string s = "";
+        for (int i = 0; i < mat.Length; i++)
+        {
+            if (i % _cols == 0) s += "\n";
+            s += mat[i];
+        }
+        Debug.Log(s);
     }
 
 }

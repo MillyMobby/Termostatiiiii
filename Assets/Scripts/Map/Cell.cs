@@ -17,6 +17,7 @@ public class Cell : MonoBehaviour
     [SerializeField] private Sprite redPlayer;
     [SerializeField] private Sprite greenPlayer;
     [SerializeField] private Sprite bluePlayer;
+    [SerializeField] private Sprite orangePlayer;
 
     [Header("Highlight settings")]
     [SerializeField] [Range(0f, 1f)] private float highlightIntensity = 0.3f;
@@ -65,6 +66,7 @@ public class Cell : MonoBehaviour
             case 1: return redPlayer;
             case 2: return greenPlayer;
             case 3: return bluePlayer;
+            case 5: return orangePlayer;
             default: return null;
         }
     }
@@ -147,8 +149,7 @@ public class Cell : MonoBehaviour
         System.Random rnd = new System.Random();
         int value = rnd.Next(1, 5);
         string strVal = value.ToString();
-
-        string path = $"Sprites/Cells/{strVal}";
+    string path = $"Sprites/Cells/{strVal}";
         cellBackground.sprite = Resources.Load<Sprite>(path);
     }
 
