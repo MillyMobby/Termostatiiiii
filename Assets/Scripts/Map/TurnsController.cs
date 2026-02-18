@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 using System.Linq;
 
 
-public class TurnsControllerSimple : MonoBehaviour
+public class TurnsController : MonoBehaviour
 {
     [SerializeField] private ToggleGroup toggleGroup;
     private string pythonServerUrl = "http://127.0.0.1:3487/highlight";
@@ -48,6 +48,8 @@ public class TurnsControllerSimple : MonoBehaviour
                     Debug.Log($"Turn selected: {selectedTurn}");
                 }
             }
+
+            SendTurnToServer();
         }
     }
 

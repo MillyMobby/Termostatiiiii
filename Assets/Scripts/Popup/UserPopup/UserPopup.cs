@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class UserPopup : MonoBehaviour
 {
     private Character currentPlayer;
+    private int color;
     private CreatureEntity.Action actionPerformed;
     public CreatureEntity.Action ActionPerformed
     {
@@ -38,7 +39,7 @@ public class UserPopup : MonoBehaviour
     private async void Start()
     {
         currentPlayer = Persist.Characters.FirstOrDefault(p => p.Name == PlayerPrefs.GetString("name"));
-        //color = currentPlayer.Color;
+        color = currentPlayer.Color;
         Debug.Log($"Current player set to: {currentPlayer?.Name}");
 
         if (currentPlayer?.Actions != null)
@@ -110,7 +111,7 @@ public class UserPopup : MonoBehaviour
 
     public void DisplayRange(int range)
     {
-        if (range != 101) { MapManager.Instance.HighlightArea(1, range); } // 101 voleva dire no range se non sbaglio
+        if (range != 101) { MapManager.Instance.HighlightArea(color, range); } // 101 voleva dire no range se non sbaglio
 
     }
 }
