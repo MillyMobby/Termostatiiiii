@@ -51,6 +51,7 @@ public class MapManager : MonoBehaviour
             {
                 int row = i / _cols;
                 int col = i % _cols;
+                cells[i].SetEmpty();
                 GridAsset asset = GridAssetFactory.CreateGridAsset<GridAsset>(
                             instance,
                             row,
@@ -58,6 +59,7 @@ public class MapManager : MonoBehaviour
                             pf
                         );
                 AddDraggableAsset(asset);
+                cells[i].UpdateValue(color);
 
                 asset.ProcessDropOnCell(_masterMode);
             }
